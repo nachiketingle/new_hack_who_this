@@ -6,6 +6,11 @@ class ChooseWord extends StatefulWidget {
 }
 
 class _ChooseWordState extends State<ChooseWord> {
+
+  void _getName() async {
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -13,9 +18,9 @@ class _ChooseWordState extends State<ChooseWord> {
         title: Text("ChooseWord"),
       ),
       body: Center(
-        child: RaisedButton(
-          child: Text("View Previous Sketch"),
-        ),
+        child: FutureBuilder(
+
+        )
       ),
     );
   }

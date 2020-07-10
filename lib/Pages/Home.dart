@@ -9,21 +9,29 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Home"),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            RaisedButton(
-              child: Text("Join Group"),
-            ),
-            RaisedButton(
-              child: Text("Create Group"),
-            )
-          ],
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text("Home"),
+        ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              RaisedButton(
+                child: Text("Join Group"),
+                onPressed: () {
+                  Navigator.of(context).pushNamed('/joinGroup');
+                },
+              ),
+              RaisedButton(
+                child: Text("Create Group"),
+                onPressed: () {
+                  Navigator.of(context).pushNamed('/createGroup');
+                },
+              )
+            ],
+          ),
         ),
       ),
     );
