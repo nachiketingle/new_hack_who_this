@@ -2,18 +2,28 @@ var express = require('express');
 const fetch = require('node-fetch');
 const mongo = require('../lib/mongo');
 const pusher = require('../lib/pusher');
+const wordBank = require('../public/words.json');
 const {
   v4: uuidv4
 } = require('uuid');
 
 var router = express.Router();
 const ACCESS_LENGTH_CODE = 4;
+const NUM_CHOICES = 3;
 
-/* GET home page. */
+// TESTING ENDPOINTS
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
+router.get('/mongo', (req, res) => {
+  mongo.viewDB('group', (docs) => res.json(docs));
+})
+
+router.delete('/mongo', (req, res) => {
+  mongo.clearCollection('group');
+  res.send(200);
+})
 
 // Create a group
 router.put('/create-group', async (req, res) => {
@@ -37,45 +47,104 @@ router.put('/create-group', async (req, res) => {
   let group = {
     'accessCode': accessCode,
     'groupName': groupName,
-    'members': [name],
+    'joinable': true,
+    'members': [name]
   };
 
   // keep generating accessCodes until a valid one is generated
-  // while (true) {
-  //   // finds a doc with access code
-  //   let doc = await mongo.findDocument(accessCode, 'group');
-  //   // if doc does not exist
-  //   if (doc == null) {
-  //     // create the doc
-  //     mongo.addDocument(group, 'group');
-  //     break;
-  //   }
-  //   // retry access code
-  //   accessCode = (uuidv4().split('-'))[0].substring(0, ACCESS_LENGTH_CODE);
-  //   group['accessCode'] = accessCode;
-  // }
+  while (true) {
+    // finds a doc with access code
+    let doc = await mongo.findDocument(accessCode, 'group');
+    // if doc does not exist
+    if (doc == null) {
+      // create the doc
+      mongo.addDocument(group, 'group');
+      break;
+    }
+    // retry access code
+    accessCode = (uuidv4().split('-'))[0].substring(0, ACCESS_LENGTH_CODE);
+    group['accessCode'] = accessCode;
+  }
   // respond with the access code
   res.status(201).json({
     accessCode: accessCode
   });
 });
 
-router.put('/join-group', (req, res, next) => {
-  res.status(200).json({
-    'message': 'Success',
-    'groupName': 'Jennie Kim Crew',
-    'members': ['Baron, Bacho, Bevin']
-  })
+// Join a group
+router.put('/join-group', async (req, res) => {
+  // Parse body
+  let accessCode = req.body['accessCode'];
+  let name = req.body['name'];
+
+  // finds group
+  let doc = await mongo.findDocument(accessCode, 'group');
+
+  // if group exists
+  if (doc) {
+    // if group is joinable
+    if (doc['joinable']) {
+      // if name is valid
+      if (!doc['members'].includes(name)) {
+        // add members
+        doc['members'].push(name);
+        //  update document
+        mongo.updateDocument(accessCode, 'members', doc['members'], 'group');
+        // // Send pusher triggerEvent
+        pusher.triggerEvent(accessCode, 'onGuestJoin', doc['members']);
+        res.status(200).json({
+          'message': 'Success',
+          'groupName': doc['groupName'],
+          'members': doc['members']
+        });
+      } else {
+        res.status(409).json({
+          'error': 'Name already exists!'
+        });
+      }
+    }
+    else {
+      res.status(409).json({
+        'error': 'Group is in progress!'
+      });
+    }
+  }
+  // if group does not exist
+  else {
+    res.status(400).json({
+      'error': 'Access Code is invalid!'
+    });
+  }
 });
 
-router.put('/start-game', (req, res, next) => {
-  res.status(200).json({
-    'availableWords': {
-      'Baron': ['Apples', 'Banana', 'Crap'],
-      'Bacho' : ['Dog', 'Elephant', 'Farm'],
-      'Bevin' : ['GDragon', 'Hwasa', 'Itzy']
-    }
-  })
+router.put('/start-game', async (req, res, next) => {
+  // Parse body
+  let accessCode = req.body['accessCode'];
+  // Set joinable status to false
+  mongo.updateDocument(accessCode, 'joinable', false, 'group');
+
+  // Get members * 3 unique words
+  let doc = await mongo.findDocument(accessCode, 'group');
+  let numWords = doc['members'].length * NUM_CHOICES;
+  let words = [...wordBank];
+
+  // Get numWords random words from words
+  let availableWords = {};
+  doc['members'].forEach( (member) => {
+    availableWords[member] = [];
+  });
+
+  // Get NUM_CHOICES words for each member
+  for(let i = 0; i < numWords; i++){
+    let rand = Math.floor(Math.random() * words.length);
+    let word = words[rand];
+    words.splice(rand,1);
+    availableWords[doc['members'][Math.floor(i/NUM_CHOICES)]].push(word);
+  }
+  // Broadcast categories to channel
+  pusher.triggerEvent(accessCode, 'onGameStart', {availableWords: availableWords});
+  // Send response
+  res.status(200).json({availableWords: availableWords});
 });
 
 router.put('/submit-word', (req, res, next) => {
