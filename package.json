@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "nodemon app.js",
+    "setup": "npm install"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
@@ -14,6 +15,7 @@
     "mongodb": "^3.5.9",
     "morgan": "~1.9.1",
     "node-fetch": "^2.6.0",
+    "nodemon": "^2.0.4",
     "pusher": "^3.0.1",
     "uuid": "^8.2.0"
   }
