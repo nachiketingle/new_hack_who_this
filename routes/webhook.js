@@ -9,7 +9,7 @@ router.post("/github", function (req, res) {
     var sender = req.body.sender;
     var branch = req.body.ref;
 
-    if (branch.indexOf('backend') > -1) {
+    if (branch.indexOf('Backend') > -1) {
         res.sendStatus(200);
         console.log(`Push Detected from ${sender.login}! Now Deploying!`);
         deploy();
