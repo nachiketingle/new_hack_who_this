@@ -19,6 +19,7 @@ class SketchCanvasState extends State<SketchCanvas> {
   static int width;
   static int height;
   int currLine = 0;
+  bool endLine = true;
 
   @override
   void initState() {
@@ -36,9 +37,11 @@ class SketchCanvasState extends State<SketchCanvas> {
   }
 
   void undoLine() {
-    setState(() {
-      _lineList.removeLast();
-    });
+    if(_lineList.isNotEmpty) {
+      setState(() {
+        _lineList.removeLast();
+      });
+    }
   }
 
   void clearCanvas() {
@@ -62,17 +65,42 @@ class SketchCanvasState extends State<SketchCanvas> {
     SketchPainter painter = SketchPainter(_lineList);
 
     return GestureDetector(
-      onTap: () => getImageData(),
+      //onTap: () => getImageData(),
+      onTapDown: (details) {
+        setState(() {
+          if(endLine == true) {
+            points = List();
+            _line = Line(
+                points,
+                Paint()
+                  ..color = chosenColor
+                  ..strokeWidth = thickness
+                  ..isAntiAlias = true);
+            _lineList.add(_line);
+            _line.points.add(details.localPosition);
+            _line.points.add(details.localPosition);
+            endLine = false;
+          }
+        });
+      },
+
+      onTapUp: (details) {
+        endLine = true;
+      },
+
       onPanStart: (details) {
         setState(() {
-          points = List();
-          _line = Line(
-              points,
-              Paint()
-                ..color = chosenColor
-                ..strokeWidth = thickness
-                ..isAntiAlias = true);
-          _lineList.add(_line);
+          if(endLine == true){
+            points = List();
+            _line = Line(
+                points,
+                Paint()
+                  ..color = chosenColor
+                  ..strokeWidth = thickness
+                  ..isAntiAlias = true);
+            _lineList.add(_line);
+            endLine = false;
+          }
           _line.points.add(details.localPosition);
           _line.points.add(details.localPosition);
         });
@@ -84,8 +112,8 @@ class SketchCanvasState extends State<SketchCanvas> {
       },
       onPanEnd: (details) {
         setState(() {
-          //_offsets.add(Offset(0, 0));
           currLine++;
+          endLine = true;
         });
       },
       child: CustomPaint(
@@ -124,11 +152,17 @@ class SketchPainter extends CustomPainter {
     for (Line line in lines) {
       List<Offset> points = line.points;
       paint = line.paint;
+
       for (int i = 0; i < points.length - 1; i++) {
         if (!size.contains(points[i]) || !size.contains(points[i + 1]))
           continue;
         //canvas.drawPoints(PointMode.points, [offsets[i]], paint);
-        canvas.drawLine(points[i], points[i + 1], paint);
+        if(points[i] == points[i + 1]) {
+          canvas.drawPoints(ui.PointMode.points, [points[i], points[i+1]], paint);
+        }
+        else {
+          canvas.drawLine(points[i], points[i + 1], paint);
+        }
       }
     }
   }
@@ -212,12 +246,12 @@ class _ColorPaletteState extends State<ColorPalette> {
         Card(
           color: chosenColor,
           child: Container(
-            height: MediaQuery.of(context).size.height * 0.075,
-            width: MediaQuery.of(context).size.width * 0.9,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: _colorButtons(),
-            )
+              height: MediaQuery.of(context).size.height * 0.075,
+              width: MediaQuery.of(context).size.width * 0.9,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: _colorButtons(),
+              )
           ),
         ),
 

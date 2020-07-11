@@ -20,7 +20,7 @@ class _ResultsSketchesState extends State<ResultsSketches> {
     Map<String, Image> details = new Map<String,Image>();
     // do api call to get details
     Map<String, dynamic> result =
-        await ResultsServices.resultsDetails(User.currUser.accessCode, word);
+    await ResultsServices.resultsDetails(User.currUser.accessCode, word);
     // get the list of details
     List<dynamic> sketchDetails = result["details"];
     for(Map<String, dynamic> sketchDetail in sketchDetails) {
@@ -67,7 +67,11 @@ class _ResultsSketchesState extends State<ResultsSketches> {
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: <Widget>[
                               Text(names[index - 1]),
-                              map[names[index - 1]]
+                              Container(
+                                width: MediaQuery.of(context).size.width * 0.75,
+                                height: MediaQuery.of(context).size.width * 0.75,
+                                child: map[names[index - 1]],
+                              )
                             ],
                           ),
                         ),
