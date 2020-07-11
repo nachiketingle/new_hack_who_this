@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:new_hack_who_this/Animations/Transitions.dart';
 import 'package:new_hack_who_this/Network/SketchServices.dart';
 import 'package:new_hack_who_this/Models/User.dart';
 import 'package:new_hack_who_this/Network/PusherWeb.dart';
 import 'dart:convert';
+
+import 'package:new_hack_who_this/Pages/ImportAllPages.dart';
 
 class GuessWord extends StatefulWidget {
   _GuessWordState createState() => _GuessWordState();
@@ -44,8 +47,8 @@ class _GuessWordState extends State<GuessWord> {
       Map<String, dynamic> json = jsonDecode(event);
       // game end event
       if (json['event'] == "onGameEnd") {
-        Navigator.of(context)
-            .pushNamed('/resultsWords');
+        //Navigator.of(context).pushNamed('/resultsWords');
+        Navigator.push(context, CustomFadeTransition.createRoute(ResultsWords()));
       }
     });
   }
