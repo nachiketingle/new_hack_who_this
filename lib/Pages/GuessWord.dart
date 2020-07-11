@@ -52,9 +52,9 @@ class _GuessWordState extends State<GuessWord> {
 
   @override
   void initState() {
-    super.initState();
     pusher = PusherWeb();
     _listenStream();
+    super.initState();
   }
 
   @override
