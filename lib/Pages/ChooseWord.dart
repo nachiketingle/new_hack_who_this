@@ -15,6 +15,7 @@ class _ChooseWordState extends State<ChooseWord> {
   String _selected;
   List<String> _words;
   bool _loaded = false;
+  bool _roundStarted = false;
   PusherWeb pusher;
 
   void _submitWord() async {
@@ -32,7 +33,8 @@ class _ChooseWordState extends State<ChooseWord> {
       print("Event: " + event);
       Map<String, dynamic> json = jsonDecode(event);
       // when all users chose word
-      if (json['event'] == "onRoundStart") {
+      if (json['event'] == "onRoundStart" && !_roundStarted) {
+        _roundStarted = true;
         Navigator.pushNamed(context, '/previousSketch', arguments: json['message']);
       }
     });

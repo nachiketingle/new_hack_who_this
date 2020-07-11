@@ -13,6 +13,7 @@ class SubmitSketch extends StatefulWidget {
 class _SubmitSketchState extends State<SubmitSketch> {
   Sketch _sketch;
   bool _loaded = false;
+  bool _roundStarted = false;
   PusherWeb pusher;
 
   // listen for events
@@ -25,7 +26,8 @@ class _SubmitSketchState extends State<SubmitSketch> {
       print("Event: " + event);
       Map<String, dynamic> json = jsonDecode(event);
       // round start event
-      if (json['event'] == "onRoundStart") {
+      if (json['event'] == "onRoundStart" && !_roundStarted) {
+        _roundStarted = true;
         // wait a little to see own drawing
         await Future.delayed(Duration(seconds: 3));
         // if guessing, go to guessing screen
