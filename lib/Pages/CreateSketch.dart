@@ -24,48 +24,51 @@ class _CreateSketchState extends State<CreateSketch> {
     SketchServices.submitSketch(User.currUser.accessCode, base64String, User.currUser.name);
     // view sketch
     //Navigator.pushNamed(context, '/submitSketch', arguments: Sketch(base64String));
-    Navigator.push(context, CustomFadeTransition.createRoute(SubmitSketch(), args: Sketch(base64String)));
+    Navigator.pushReplacement(context, CustomFadeTransition.createRoute(SubmitSketch(), args: Sketch(base64String)));
   }
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text("CreateSketch"),
-        ),
-        body: Container(
-          height: double.infinity,
-          width: double.infinity,
-          child: Stack(
-            alignment: Alignment.center,
-            children: <Widget>[
-              Positioned(
-                right: 20,
-                top: 20,
-                child: Timer(
-                  duration: Constants.sketchTimer,
-                  callback: () {
-                    _submitSketch();
-                  },
-                ),
-              ),
-              Positioned(
-                top: 75,
-                child: SketchCanvas(key: _sketchCanvasKey,),
-              ),
-              Positioned(
-                bottom: 10,
-                child: ColorPalette(
-                    undo: () {
-                      _sketchCanvasKey.currentState.undoLine();
+    return WillPopScope(
+      onWillPop: () => Future(() => false),
+      child: SafeArea(
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text("CreateSketch"),
+          ),
+          body: Container(
+            height: double.infinity,
+            width: double.infinity,
+            child: Stack(
+              alignment: Alignment.center,
+              children: <Widget>[
+                Positioned(
+                  right: 20,
+                  top: 20,
+                  child: Timer(
+                    duration: Constants.sketchTimer,
+                    callback: () {
+                      _submitSketch();
                     },
-                  clear: () {
-                      _sketchCanvasKey.currentState.clearCanvas();
-                  },
+                  ),
+                ),
+                Positioned(
+                  top: 75,
+                  child: SketchCanvas(key: _sketchCanvasKey,),
+                ),
+                Positioned(
+                  bottom: 10,
+                  child: ColorPalette(
+                      undo: () {
+                        _sketchCanvasKey.currentState.undoLine();
+                      },
+                    clear: () {
+                        _sketchCanvasKey.currentState.clearCanvas();
+                    },
+                  )
                 )
-              )
-            ],
+              ],
+            ),
           ),
         ),
       ),

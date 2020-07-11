@@ -33,7 +33,7 @@ class _SubmitSketchState extends State<SubmitSketch> {
         // wait a little to see own drawing
         await Future.delayed(Duration(seconds: 3));
         //Navigator.pushNamed(context, '/previousSketch', arguments: json['message']);
-        Navigator.push(context, CustomFadeTransition.createRoute(PreviousSketch(), args: json['message']));
+        Navigator.pushReplacement(context, CustomFadeTransition.createRoute(PreviousSketch(), args: json['message']));
       }
     });
   }
@@ -52,35 +52,28 @@ class _SubmitSketchState extends State<SubmitSketch> {
       _listenStream();
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("SubmitSketch"),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.navigate_next),
-            onPressed: () {
-              //Navigator.of(context).pushNamed('/guessWord');
-              Navigator.push(context, CustomFadeTransition.createRoute(GuessWord()));
-            },
-          )
-        ],
+    return WillPopScope(
+      onWillPop: () => Future(() => false),
+      child: SafeArea(
+        child: Scaffold(
+          body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Text(
+                    "TIME UP!\nThis is what you drew.",
+                    style: TextStyle(fontSize: 20),
+                    textAlign: TextAlign.center,
+                  ),
+                  _sketch.image,
+                  Text(
+                    "Waiting for next",
+                    style: TextStyle(color: Colors.grey),
+                  )
+                ],
+              )),
+        ),
       ),
-      body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              Text(
-                "TIME UP!\nThis is what you drew.",
-                style: TextStyle(fontSize: 20),
-                textAlign: TextAlign.center,
-              ),
-              _sketch.image,
-              Text(
-                "Waiting for next",
-                style: TextStyle(color: Colors.grey),
-              )
-            ],
-          )),
     );
   }
 }

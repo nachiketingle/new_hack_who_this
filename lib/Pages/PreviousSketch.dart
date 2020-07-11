@@ -43,75 +43,66 @@ class _PreviousSketchState extends State<PreviousSketch> {
       }
     }
 
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text("PreviousSketch"),
-          actions: <Widget>[
-            IconButton(
-              icon: Icon(Icons.navigate_next),
-              onPressed: () {
-                //Navigator.of(context).pushNamed('/createSketch');
-                Navigator.of(context).push(CustomFadeTransition.createRoute(CreateSketch()));
-              },
-            )
-          ],
-        ),
-        body: Container(
-            width: double.infinity,
-            height: double.infinity,
-            child: Stack(children: <Widget>[
-              Positioned(
-                top: 20,
-                right: 20,
-                child: Timer(
-                  duration: Constants.viewSketchTimer,
-                  callback: () {
-                    if (_isGuessing) {
-                      //Navigator.of(context).pushNamed('/guessWord');
-                      Navigator.of(context).push(CustomFadeTransition.createRoute(GuessWord()));
-                    } else {
-                      //Navigator.of(context).pushNamed('/createSketch');
-                      Navigator.of(context).push(CustomFadeTransition.createRoute(CreateSketch()));
-                    }
-                  },
+    return WillPopScope(
+      onWillPop: () => Future(() => false),
+      child: SafeArea(
+        child: Scaffold(
+          body: Container(
+              width: double.infinity,
+              height: double.infinity,
+              child: Stack(children: <Widget>[
+                Positioned(
+                  top: 20,
+                  right: 20,
+                  child: Timer(
+                    duration: Constants.viewSketchTimer,
+                    callback: () {
+                      if (_isGuessing) {
+                        //Navigator.of(context).pushNamed('/guessWord');
+                        Navigator.of(context).pushReplacement(CustomFadeTransition.createRoute(GuessWord()));
+                      } else {
+                        //Navigator.of(context).pushNamed('/createSketch');
+                        Navigator.of(context).pushReplacement(CustomFadeTransition.createRoute(CreateSketch()));
+                      }
+                    },
+                  ),
                 ),
-              ),
-              Center(
-                child: _roundNumber > 0
-                    ? FutureBuilder(
-                        future: _getImageBytes(),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            List<int> bytes = snapshot.data;
-                            return Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                Text(
-                                  "Remember this image! You'll need to " +
-                                      (_isGuessing ? "guess" : "draw") +
-                                      " it!",
-                                  style: TextStyle(fontSize: 20),
-                                ),
-                                Container(
-                                  width: MediaQuery.of(context).size.width * 0.75,
-                                  height: MediaQuery.of(context).size.height * 0.75,
-                                  child: Image.memory(
-                                    bytes,
-                                    fit: BoxFit.contain
+                Center(
+                  child: _roundNumber > 0
+                      ? FutureBuilder(
+                          future: _getImageBytes(),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData) {
+                              List<int> bytes = snapshot.data;
+                              return Column(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  Text(
+                                    "Remember this image! You'll need to " +
+                                        (_isGuessing ? "guess" : "draw") +
+                                        " it!",
+                                    style: TextStyle(fontSize: 20),
                                   ),
-                                ),
-                              ],
-                            );
-                          } else {
-                            return Center(child: CircularProgressIndicator());
-                          }
-                        },
-                      )
-                    : Text("You chose to draw " + _myWord + "! Good Luck!"),
-              ),
-            ])),
+                                  Container(
+                                    width: MediaQuery.of(context).size.width * 0.75,
+                                    height: MediaQuery.of(context).size.height * 0.75,
+                                    child: Image.memory(
+                                      bytes,
+                                      fit: BoxFit.contain
+                                    ),
+                                  ),
+                                ],
+                              );
+                            } else {
+                              return Center(child: CircularProgressIndicator());
+                            }
+                          },
+                        )
+                      : Text("You chose to draw " + _myWord + "! Good Luck!"),
+                ),
+              ])),
+        ),
       ),
     );
   }

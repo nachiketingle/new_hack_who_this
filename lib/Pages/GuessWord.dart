@@ -48,7 +48,7 @@ class _GuessWordState extends State<GuessWord> {
       // game end event
       if (json['event'] == "onGameEnd") {
         //Navigator.of(context).pushNamed('/resultsWords');
-        Navigator.push(context, CustomFadeTransition.createRoute(ResultsWords()));
+        Navigator.pushReplacement(context, CustomFadeTransition.createRoute(ResultsWords()));
       }
     });
   }
@@ -62,13 +62,13 @@ class _GuessWordState extends State<GuessWord> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("GuessWord"),
-      ),
-      body: Center(
-        child: !guessed
-            ? FutureBuilder(
+    return WillPopScope(
+      onWillPop: () => Future(() => false),
+      child: SafeArea(
+        child: Scaffold(
+          body: Center(
+            child: !guessed
+                ? FutureBuilder(
                 future: _getWords(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
@@ -81,9 +81,9 @@ class _GuessWordState extends State<GuessWord> {
                               height: MediaQuery.of(context).size.height * 0.15,
                               child: Center(
                                   child: Text(
-                                "What is this a picture of?",
-                                style: TextStyle(fontSize: 20),
-                              ))),
+                                    "What is this a picture of?",
+                                    style: TextStyle(fontSize: 20),
+                                  ))),
                           Expanded(
                             child: ListView.builder(
                               physics: AlwaysScrollableScrollPhysics(),
@@ -94,8 +94,8 @@ class _GuessWordState extends State<GuessWord> {
                                   child: InkWell(
                                     child: Container(
                                       height:
-                                          MediaQuery.of(context).size.height *
-                                              0.2,
+                                      MediaQuery.of(context).size.height *
+                                          0.2,
                                       child: Center(
                                         child: Text(
                                           words[index],
@@ -120,12 +120,14 @@ class _GuessWordState extends State<GuessWord> {
                     return CircularProgressIndicator();
                   }
                 })
-            : Column(
-                children: <Widget>[
-                  Text("Waiting on others..."),
-                  CircularProgressIndicator()
-                ],
-              ),
+                : Column(
+              children: <Widget>[
+                Text("Waiting on others..."),
+                CircularProgressIndicator()
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
