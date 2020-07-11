@@ -17,6 +17,25 @@ class _LobbyState extends State<Lobby> {
   PusherWeb pusher;
   List<String> events = ["onGuestJoin", "onGameStart"];
 
+  List<String> emojis = [
+    '🍇',
+    '🍈',
+    '🍉',
+    '🍊',
+    '🍋',
+    '🍌',
+    '🍍',
+    '🍎',
+    '🍏',
+    '🍐',
+    '🍑',
+    '🍒',
+    '🍓',
+    '🥝',
+    '🍅',
+    '🥑'
+  ];
+
   void _startSketching() {
     GroupServices.startGame(_user.accessCode);
   }
@@ -30,13 +49,31 @@ class _LobbyState extends State<Lobby> {
 
   Widget _userBuilder(
       User user, int index, BuildContext context, Animation<double> animation) {
-    return SizeTransition(
-      key: ValueKey<int>(index),
-      sizeFactor: animation,
-      child: ListTile(
-        title: Text(_userList[index].name),
-      ),
-    );
+    Animation<Offset> offset;
+    offset = Tween<Offset>(begin: Offset(1, 0), end: Offset(0, 0))
+        .animate(CurvedAnimation(
+      parent: animation,
+      curve: Curves.ease,
+    ));
+
+    return SlideTransition(
+        key: ValueKey<int>(index),
+        position: offset,
+        child: Column(children: <Widget>[
+          ListTile(
+            dense: true,
+            leading: Text('${emojis[index % emojis.length]}',
+                style: TextStyle(fontSize: 30)),
+            title: Text(
+              _userList[index].name,
+              style: TextStyle(
+                fontSize: 18,
+              ),
+            ),
+            subtitle: Text(index == 0 ? "Owner" : 'Guest #$index'),
+          ),
+          Divider()
+        ]));
   }
 
   // listen for events
@@ -116,8 +153,29 @@ class _LobbyState extends State<Lobby> {
         Center(
             child: Column(
           children: <Widget>[
-            Text("Group Name: ${_user.groupName}"),
-            Text("Access Code: ${_user.accessCode}"),
+            Text(
+              _user.groupName,
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 50,
+                  color: Constants.primaryColor),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  "Access Code: ",
+                  style: TextStyle(fontSize: 20),
+                ),
+                SelectableText(
+                  _user.accessCode.toString(),
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                )
+              ],
+            ),
+            Divider(
+              color: Colors.black,
+            ),
             Expanded(
               child: AnimatedList(
                 key: _animatedListKey,
@@ -128,6 +186,19 @@ class _LobbyState extends State<Lobby> {
                       _userList[index], index, context, animation);
                 },
               ),
+            ),
+            Divider(
+              color: Colors.black,
+            ),
+            Align(
+              alignment: Alignment.bottomLeft,
+              child: Padding(
+                  padding:
+                      EdgeInsets.all(MediaQuery.of(context).size.height * .03),
+                  child: Text(
+                    "Group Size: " + _userList.length.toString(),
+                    style: TextStyle(fontSize: 20),
+                  )),
             ),
           ],
         ))
