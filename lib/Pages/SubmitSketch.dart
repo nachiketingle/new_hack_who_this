@@ -30,15 +30,8 @@ class _SubmitSketchState extends State<SubmitSketch> {
         _roundStarted = true;
         // wait a little to see own drawing
         await Future.delayed(Duration(seconds: 3));
-        // if guessing, go to guessing screen
-        if (json['message']['isGuessing']) {
-          Navigator.of(context).pushNamed('/guessWord');
-        } 
-        // otherwise continue game
-        else {
-          Navigator.pushNamed(context, '/previousSketch',
-              arguments: json['message']);
-        }
+        Navigator.pushNamed(context, '/previousSketch',
+            arguments: json['message']);
       }
     });
   }

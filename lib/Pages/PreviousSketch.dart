@@ -13,8 +13,9 @@ class PreviousSketch extends StatefulWidget {
 class _PreviousSketchState extends State<PreviousSketch> {
   bool _loaded = false;
   int _roundNumber;
+  bool _isGuessing;
   String _myWord;
- 
+
   Future<List<int>> _getImageBytes() async {
     String base64String =
         await SketchServices.latestSketch(User.currUser.accessCode, _myWord);
@@ -29,6 +30,7 @@ class _PreviousSketchState extends State<PreviousSketch> {
       Map<String, dynamic> roundInfo =
           ModalRoute.of(context).settings.arguments;
       _roundNumber = roundInfo["roundNumber"];
+      _isGuessing = roundInfo["isGuessing"];
       Map<String, dynamic> playerToWord = roundInfo["playerToWord"];
       // find the word assigned to current user
       for (String player in playerToWord.keys) {
@@ -61,7 +63,11 @@ class _PreviousSketchState extends State<PreviousSketch> {
                 child: Timer(
                   duration: Constants.viewSketchTimer,
                   callback: () {
-                    Navigator.of(context).pushNamed('/createSketch');
+                    if (_isGuessing) {
+                      Navigator.of(context).pushNamed('/guessWord');
+                    } else {
+                      Navigator.of(context).pushNamed('/createSketch');
+                    }
                   },
                 ),
               ),
@@ -77,7 +83,9 @@ class _PreviousSketchState extends State<PreviousSketch> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: <Widget>[
                                 Text(
-                                  "Remember this image!",
+                                  "Remember this image! You'll need to " +
+                                      (_isGuessing ? "guess" : "draw") +
+                                      " it!",
                                   style: TextStyle(fontSize: 20),
                                 ),
                                 Image.memory(
