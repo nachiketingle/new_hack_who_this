@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'dart:async' as async;
 
+/// This widget shows a countdown timer. It callbacks when the timer reaches 0
 class Timer extends StatefulWidget {
-  Timer({@required this.duration, @required this.callback});
+  Timer({Key key, @required this.duration, @required this.callback}):
+        super(key: key);
   _TimerState createState() => _TimerState();
 
   final Function callback;
@@ -39,7 +41,7 @@ class _TimerState extends State<Timer> {
       textAlign: TextAlign.end,
       style: TextStyle(
         fontSize: 50,
-
+        color: Colors.black
       ),
     );
   }

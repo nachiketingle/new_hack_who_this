@@ -5,4 +5,5 @@ class Constants {
   static final Color secondaryColor = Color.fromARGB(255, 0xfe, 0xe1, 0x40);
   static final Color primarySwatch = Colors.red;
   static final int chooseWordTimer = 10;
+  static final int sketchTimer = 30;
 }
