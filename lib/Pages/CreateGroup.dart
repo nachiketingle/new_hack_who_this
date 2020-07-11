@@ -5,7 +5,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import '../Helpers/Constants.dart';
 
 class CreateGroup extends StatefulWidget {
-  final VoidCallback onCreate;
+  final Function(String, String) onCreate;
   final VoidCallback onEdit;
   CreateGroup({Key key, @required this.onCreate, @required this.onEdit})
       : super(key: key);
@@ -32,25 +32,9 @@ class CreateGroupState extends State<CreateGroup> {
     }
 
     // signal parent creating group
-    widget.onCreate();
+    widget.onCreate(_groupNameController.text.trim(), _usernameController.text.trim());
 
-    await Future.delayed(Duration(seconds: 1));
 
-    GroupServices.createGroup(
-            _groupNameController.text.trim(), _usernameController.text.trim())
-        .then((accessCode) {
-      List<User> allUsers = List();
-      // If successful, create user and go to next page
-      User user = User(
-        name: _usernameController.text.trim(),
-        groupName: _groupNameController.text.trim(),
-        accessCode: accessCode,
-        isHost: true,
-      );
-      allUsers.add(user);
-      User.currUser = user;
-      Navigator.pushNamed(context, "/lobby", arguments: allUsers);
-    });
   }
 
   bool _isValid() {

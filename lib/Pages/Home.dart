@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:new_hack_who_this/Models/User.dart';
 import '../Helpers/Constants.dart';
 import './JoinGroup.dart';
 import './CreateGroup.dart';
 import 'package:keyboard_visibility/keyboard_visibility.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:new_hack_who_this/Network/GroupServices.dart';
 
 class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
@@ -49,10 +51,29 @@ class _HomeState extends State<Home> {
       onEdit: () {
         joinKey.currentState.reset();
       },
-      onCreate: () {
+      onCreate: (groupName, userName) async {
         setState(() {
           _loading = true;
         });
+
+        await Future.delayed(Duration(seconds: 1));
+
+        GroupServices.createGroup(
+            groupName, userName)
+            .then((accessCode) {
+          List<User> allUsers = List();
+          // If successful, create user and go to next page
+          User user = User(
+            name: userName,
+            groupName: groupName,
+            accessCode: accessCode,
+            isHost: true,
+          );
+          allUsers.add(user);
+          User.currUser = user;
+          Navigator.pushNamed(context, "/lobby", arguments: allUsers);
+        });
+
       },
     );
   }

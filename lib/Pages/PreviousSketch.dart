@@ -90,7 +90,7 @@ class _PreviousSketchState extends State<PreviousSketch> {
                                 ),
                                 Image.memory(
                                   bytes,
-                                  fit: BoxFit.cover,
+                                  fit: BoxFit.contain
                                 ),
                               ],
                             );
