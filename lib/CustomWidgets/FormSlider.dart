@@ -59,6 +59,11 @@ class FormSliderState extends State<FormSlider> {
   }
 
   Widget _formBuilder(BuildContext context, int itemIndex) {
+    OutlineInputBorder border = OutlineInputBorder(
+      borderRadius: BorderRadius.all(Radius.circular(10)),
+      borderSide: BorderSide(color: Constants.textColor, width: 2.0),
+    );
+
     List<Widget> form = [
       ButtonTheme(
         buttonColor: Constants.buttonColor,
@@ -105,13 +110,14 @@ class FormSliderState extends State<FormSlider> {
                   curve: Curves.easeInOut);
               field2Focus.requestFocus();
             },
-            decoration: new InputDecoration(
+            decoration: InputDecoration(
                 isDense: true,
                 labelText: widget.field1,
-                border: new OutlineInputBorder(
-                  borderRadius: new BorderRadius.all(Radius.circular(10)),
-                  borderSide: new BorderSide(),
-                )),
+                labelStyle: TextStyle(color: Constants.textColor, fontSize: 18),
+                focusColor: Constants.textColor,
+                focusedBorder: border,
+                enabledBorder: border,
+                border: border),
           )),
       Container(
           width: MediaQuery.of(context).size.width * 0.65,
@@ -121,13 +127,14 @@ class FormSliderState extends State<FormSlider> {
             onSubmitted: (s) {
               _submit(context);
             },
-            decoration: new InputDecoration(
+            decoration: InputDecoration(
                 isDense: true,
                 labelText: widget.field2,
-                border: new OutlineInputBorder(
-                  borderRadius: new BorderRadius.all(Radius.circular(10)),
-                  borderSide: new BorderSide(),
-                )),
+                labelStyle: TextStyle(color: Constants.textColor, fontSize: 18),
+                focusColor: Constants.textColor,
+                focusedBorder: border,
+                enabledBorder: border,
+                border: border),
           )),
     ];
     return Center(child: form[itemIndex]);

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async' as async;
+import 'package:new_hack_who_this/Helpers/Constants.dart';
 
 /// This widget shows a countdown timer. It callbacks when the timer reaches 0
 class Timer extends StatefulWidget {
@@ -37,11 +38,11 @@ class _TimerState extends State<Timer> {
   @override
   Widget build(BuildContext context) {
     return Text(
-      duration.toString(),
+      "Time Left: " + duration.toString(),
       textAlign: TextAlign.end,
       style: TextStyle(
-        fontSize: 50,
-        color: Colors.black
+        fontSize: 30,
+        color: duration > 3 ? Constants.textColor : Colors.redAccent
       ),
     );
   }
