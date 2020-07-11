@@ -38,7 +38,10 @@ class _ChooseWordState extends State<ChooseWord> {
       if (json['event'] == "onRoundStart" && !_roundStarted) {
         _roundStarted = true;
         //Navigator.pushNamed(context, '/previousSketch', arguments: json['message']);
-        Navigator.pushReplacement(context, CustomFadeTransition.createRoute(PreviousSketch(), args: json['message']));
+        Navigator.pushReplacement(
+            context,
+            CustomFadeTransition.createRoute(PreviousSketch(),
+                args: json['message']));
       }
     });
   }
@@ -62,29 +65,49 @@ class _ChooseWordState extends State<ChooseWord> {
       onWillPop: () => Future(() => false),
       child: SafeArea(
         child: Scaffold(
-          body: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: <Widget>[
-                    // Display custom timer
-                    Timer(
-                      duration: Constants.chooseWordTimer,
-                      callback: () {
-                        _submitWord();
-                      },
-                    ),
-
-                    // Display list of selectable words
-                    _WordList(
-                        words: _words,
-                        selected: (selectedWord) {
-                          _selected = selectedWord;
-                        }),
-                  ],
+            body: Stack(children: <Widget>[
+          Opacity(
+              opacity: .6,
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topRight,
+                      colors: [
+                        Constants.primaryColor,
+                        Constants.secondaryColor
+                      ]),
                 ),
               )),
-        ),
+          Center(
+              child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: <Widget>[
+                SizedBox(height: MediaQuery.of(context).size.height * .05),
+                Text(
+                  "Choose a word to draw!",
+                  style: TextStyle(color: Constants.textColor, fontSize: 23),
+                ),
+                SizedBox(height: MediaQuery.of(context).size.height * .05),
+                // Display list of selectable words
+                _WordList(
+                    words: _words,
+                    selected: (selectedWord) {
+                      _selected = selectedWord;
+                    }),
+                SizedBox(height: MediaQuery.of(context).size.height * .05),
+                // Display custom timer
+                Timer(
+                  duration: Constants.chooseWordTimer,
+                  callback: () {
+                    _submitWord();
+                  },
+                ),
+              ],
+            ),
+          )),
+        ])),
       ),
     );
   }
@@ -116,7 +139,7 @@ class _WordListState extends State<_WordList> {
           child: Center(
             child: Text(
               word,
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: Colors.white, fontSize: 30),
             ),
           ),
         ),
