@@ -268,21 +268,7 @@ router.put('/submit-guess', async (req, res, next) => {
   let submittedCount = doc['submittedMembers'].length;
   if (submittedCount >= doc['members'].length){
     // Send a pusher notification to trigger game end
-    let dict = {};
-    Object.keys(doc['playerToWord']).forEach( player => {
-      let word = doc['playerToWord'][player];
-      // player is guessing word
-      dict[word] = {sketches: doc['wordSketches']};
-      dict[word]['guess'] = doc['wordGuesses'][player];
-    });
-    console.log(doc['submittedMembers']);
-
-    setTimeout(function(){
-      pusher.triggerEvent(accessCode, 'onGameEnd', dict);
-    }, 1000 * 5); // Timeout after HOURS hours
-
-    // Delete the document when we are done
-    mongo.deleteDocument(accessCode, 'group')
+    pusher.triggerEvent(accessCode, 'onGameEnd', {message: 'GG'});
   }
 
   res.status(200).json({
@@ -318,6 +304,49 @@ router.get('/prompt-guess', async (req, res, next) => {
 
   res.status(200).json({words: shuffle(wordChoices)});
 });
+
+router.get('/results', async (req, res, next) => {
+  let accessCode = req.query.accessCode;
+  let doc = await mongo.findDocument(accessCode, 'group');
+
+  let dict = {};
+  Object.keys(doc['playerToWord']).forEach( player => {
+    let word = doc['playerToWord'][player];
+    let guess = doc['wordGuesses'][player];
+    dict[word] = (word == guess);
+  });
+
+  res.status(200).json(dict);
+});
+
+router.get('/results-details', async (req, res, next) => {
+  let accessCode = req.query.accessCode;
+  let word = req.query.word;
+  let player = null;
+
+  let doc = await mongo.findDocument(accessCode, 'group');
+
+  // Get the player who chose the original word
+  Object.keys(doc['playerChosenWord']).forEach( currPlayer => {
+    if(doc['playerChosenWord'][currPlayer] == word){
+      player = currPlayer
+    }
+  });
+
+  // Get the index of player
+  let index = doc['members'].indexOf(player);
+
+  let list = [];
+  let offset = 0;
+  doc['wordSketches'][word].forEach( sketch => {
+    let drawer = doc['members'][(index + offset) % doc['members'].length]
+    list.push({drawer: drawer, sketch: sketch});
+    offset++;
+  });
+
+  res.status(200).json({details: list});
+});
+
 
 // ---------------------------HELPER FUNCTIONS----------------------------------
 
