@@ -222,7 +222,7 @@ router.put('/submit-sketch', async (req, res, next) => {
   let submittedCount = doc['submittedMembers'].length;
 
   // If all sketches submitted for current round, rotate assignment, start next round and send player to word mapping
-  if (submittedCount >= doc['members'].length){
+  if (submittedCount == doc['members'].length){
     // Get the round number from number of submitted sketches
     let word = Object.keys(doc['wordSketches'])[0];
     let round = doc['wordSketches'][word].length;
@@ -243,6 +243,7 @@ router.put('/submit-sketch', async (req, res, next) => {
     }
     dict['playerToWord'] = doc['playerToWord'];
     pusher.triggerEvent(accessCode, 'onRoundStart', dict);
+
   }
 
   res.status(200).json({
@@ -267,8 +268,6 @@ router.put('/submit-guess', async (req, res, next) => {
   let submittedCount = doc['submittedMembers'].length;
   if (submittedCount >= doc['members'].length){
     // Send a pusher notification to trigger game end
-    await mongo.updateDocument(accessCode, `submittedMembers`, [], 'group');
-
     let dict = {};
     Object.keys(doc['playerToWord']).forEach( player => {
       let word = doc['playerToWord'][player];
@@ -276,6 +275,7 @@ router.put('/submit-guess', async (req, res, next) => {
       dict[word] = {sketches: doc['wordSketches']};
       dict[word]['guess'] = doc['wordGuesses'][player];
     });
+    console.log(doc['submittedMembers']);
     pusher.triggerEvent(accessCode, 'onGameEnd', dict);
 
     // Delete the document when we are done
