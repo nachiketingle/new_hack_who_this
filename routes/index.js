@@ -313,7 +313,7 @@ router.get('/prompt-guess', async (req, res, next) => {
     wordChoices.push(word);
   }
 
-  res.status(200).json(shuffle(wordChoices));
+  res.status(200).json({words: shuffle(wordChoices)});
 });
 
 // ---------------------------HELPER FUNCTIONS----------------------------------
