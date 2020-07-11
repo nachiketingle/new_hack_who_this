@@ -3,6 +3,8 @@ import 'package:new_hack_who_this/CustomWidgets/Timer.dart';
 import 'package:new_hack_who_this/Helpers/Constants.dart';
 import 'package:new_hack_who_this/CustomWidgets/SketchCanvas.dart';
 import 'package:new_hack_who_this/Models/Sketch.dart';
+import 'package:new_hack_who_this/Network/SketchServices.dart';
+import 'package:new_hack_who_this/Models/User.dart';
 
 class CreateSketch extends StatefulWidget {
 
@@ -15,7 +17,7 @@ class _CreateSketchState extends State<CreateSketch> {
 
   Future<void> _submitSketch() async {
     String base64String = await _sketchCanvasKey.currentState.getImageData();
-    
+    SketchServices.submitSketch(User.currUser.accessCode, base64String, User.currUser.name);
     Navigator.pushNamed(context, '/submitSketch', arguments: Sketch(base64String));
   }
 
