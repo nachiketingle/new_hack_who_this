@@ -18,11 +18,6 @@ class _SketchCanvasState extends State<SketchCanvas> {
   static int thickness;
   int currLine = 0;
 
-  Offset _toLocal(BuildContext context, Offset global) {
-    RenderBox getBox = context.findRenderObject();
-    return getBox.globalToLocal(global);
-  }
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
