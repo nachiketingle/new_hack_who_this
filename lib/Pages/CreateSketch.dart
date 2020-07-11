@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:new_hack_who_this/Animations/Transitions.dart';
 import 'package:new_hack_who_this/CustomWidgets/Timer.dart';
 import 'package:new_hack_who_this/Helpers/Constants.dart';
 import 'package:new_hack_who_this/CustomWidgets/SketchCanvas.dart';
 import 'package:new_hack_who_this/Models/Sketch.dart';
 import 'package:new_hack_who_this/Network/SketchServices.dart';
 import 'package:new_hack_who_this/Models/User.dart';
+import 'package:new_hack_who_this/Pages/ImportAllPages.dart';
 
 class CreateSketch extends StatefulWidget {
 
@@ -21,7 +23,8 @@ class _CreateSketchState extends State<CreateSketch> {
     // submit the sketch to the server
     SketchServices.submitSketch(User.currUser.accessCode, base64String, User.currUser.name);
     // view sketch
-    Navigator.pushNamed(context, '/submitSketch', arguments: Sketch(base64String));
+    //Navigator.pushNamed(context, '/submitSketch', arguments: Sketch(base64String));
+    Navigator.push(context, CustomFadeTransition.createRoute(SubmitSketch(), args: Sketch(base64String)));
   }
 
   @override

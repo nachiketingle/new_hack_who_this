@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:new_hack_who_this/Animations/Transitions.dart';
 import 'package:new_hack_who_this/Helpers/Constants.dart';
 import 'package:new_hack_who_this/Models/User.dart';
 import 'package:new_hack_who_this/Network/PusherWeb.dart';
 import 'package:new_hack_who_this/Network/GroupServices.dart';
 import 'dart:convert';
+
+import 'package:new_hack_who_this/Pages/ChooseWord.dart';
 
 class Lobby extends StatefulWidget {
   _LobbyState createState() => _LobbyState();
@@ -108,7 +111,8 @@ class _LobbyState extends State<Lobby> {
           }
         }
         print("Starting Game with words " + myWords.toString());
-        Navigator.of(context).pushNamed('/chooseWord', arguments: myWords);
+        //Navigator.of(context).pushNamed('/chooseWord', arguments: myWords);
+        Navigator.push(context, CustomFadeTransition.createRoute(ChooseWord(), args: myWords));
       }
     });
   }
@@ -152,62 +156,62 @@ class _LobbyState extends State<Lobby> {
             )),
         Center(
             child: Column(
-          children: <Widget>[
-            Text(
-              _user.groupName,
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 50,
-                  color: Constants.primaryColor),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Text(
-                  "Access Code: ",
-                  style: TextStyle(fontSize: 20),
+                  _user.groupName,
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 50,
+                      color: Constants.primaryColor),
                 ),
-                SelectableText(
-                  _user.accessCode.toString(),
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                )
-              ],
-            ),
-            Divider(
-              color: Colors.black,
-            ),
-            Expanded(
-              child: AnimatedList(
-                key: _animatedListKey,
-                shrinkWrap: true,
-                initialItemCount: _userList.length,
-                itemBuilder: (context, index, animation) {
-                  return _userBuilder(
-                      _userList[index], index, context, animation);
-                },
-              ),
-            ),
-            Divider(
-              color: Colors.black,
-            ),
-            Align(
-              alignment: Alignment.bottomLeft,
-              child: Padding(
-                  padding:
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      "Access Code: ",
+                      style: TextStyle(fontSize: 20),
+                    ),
+                    SelectableText(
+                      _user.accessCode.toString(),
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    )
+                  ],
+                ),
+                Divider(
+                  color: Colors.black,
+                ),
+                Expanded(
+                  child: AnimatedList(
+                    key: _animatedListKey,
+                    shrinkWrap: true,
+                    initialItemCount: _userList.length,
+                    itemBuilder: (context, index, animation) {
+                      return _userBuilder(
+                          _userList[index], index, context, animation);
+                    },
+                  ),
+                ),
+                Divider(
+                  color: Colors.black,
+                ),
+                Align(
+                  alignment: Alignment.bottomLeft,
+                  child: Padding(
+                      padding:
                       EdgeInsets.all(MediaQuery.of(context).size.height * .03),
-                  child: Text(
-                    "Group Size: " + _userList.length.toString(),
-                    style: TextStyle(fontSize: 20),
-                  )),
-            ),
-          ],
-        ))
+                      child: Text(
+                        "Group Size: " + _userList.length.toString(),
+                        style: TextStyle(fontSize: 20),
+                      )),
+                ),
+              ],
+            ))
       ]),
       floatingActionButton: _user.isHost
           ? FloatingActionButton.extended(
-              label: Text("Start"),
-              onPressed: _startSketching,
-            )
+        label: Text("Start"),
+        onPressed: _startSketching,
+      )
           : Container(),
     );
   }

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:new_hack_who_this/Animations/Transitions.dart';
 import 'package:new_hack_who_this/Network/ResultsServices.dart';
 import 'package:new_hack_who_this/Models/User.dart';
+import 'package:new_hack_who_this/Pages/ImportAllPages.dart';
 
 class ResultsWords extends StatefulWidget {
   _ResultsWordsState createState() => _ResultsWordsState();
@@ -29,7 +31,8 @@ class _ResultsWordsState extends State<ResultsWords> {
 
   /// Go to next page to view all sketches of the word
   void _viewWordSketches(String word) {
-    Navigator.pushNamed(context, '/resultsSketches', arguments: word);
+    //Navigator.pushNamed(context, '/resultsSketches', arguments: word);
+    Navigator.push(context, CustomFadeTransition.createRoute(ResultsSketches(), args: word));
   }
 
   @override
