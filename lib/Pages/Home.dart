@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:new_hack_who_this/Models/User.dart';
@@ -6,6 +8,7 @@ import 'package:keyboard_visibility/keyboard_visibility.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:new_hack_who_this/Network/GroupServices.dart';
 import 'package:new_hack_who_this/CustomWidgets/FormSlider.dart';
+import 'package:particles_flutter/particles_flutter.dart';
 
 class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
@@ -19,6 +22,7 @@ class _HomeState extends State<Home> {
   GlobalKey<FormSliderState> joinKey = GlobalKey();
   GlobalKey<FormSliderState> createKey = GlobalKey();
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
+  double _bannerOpacity = .9;
 
   @override
   void initState() {
@@ -35,8 +39,8 @@ class _HomeState extends State<Home> {
       field1: "Access Code",
       field2: "Name",
       gradient: [
-        Constants.primaryColor.withOpacity(.5),
-        Constants.secondaryColor.withOpacity(.5)
+        Constants.primaryColor.withOpacity(_bannerOpacity),
+        Constants.secondaryColor.withOpacity(_bannerOpacity)
       ],
       key: joinKey,
       onSlide: () {
@@ -96,8 +100,8 @@ class _HomeState extends State<Home> {
       field1: "Group Name",
       field2: "Your Name",
       gradient: [
-        Constants.secondaryColor.withOpacity(.5),
-        Constants.primaryColor.withOpacity(.5)
+        Constants.secondaryColor.withOpacity(_bannerOpacity),
+        Constants.primaryColor.withOpacity(_bannerOpacity)
       ],
       key: createKey,
       onSlide: () {
@@ -144,23 +148,34 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     print(_keyboardVisible);
-    return SafeArea(
-        child: Scaffold(
+    return Scaffold(
       key: _scaffoldKey,
       body: SafeArea(
         child: Stack(
           children: <Widget>[
+            CircularParticle(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              awayRadius: 80,
+              numberOfParticles: 100,
+              speedOfParticles: 1,
+              onTapAnimation: false,
+              particleColor: Constants.primaryColor,
+              awayAnimationDuration: Duration(milliseconds: 600),
+              maxParticleSize: 8,
+              isRandSize: true,
+              isRandomColor: true,
+              randColorList: [
+                Constants.secondaryColor,
+              ],
+              awayAnimationCurve: Curves.easeInOutBack,
+              enableHover: false,
+              hoverColor: Colors.white,
+              hoverRadius: 90,
+              connectDots: true,
+            ),
             Opacity(
-                opacity: .4,
-                child: Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage("assets/background.jpg"),
-                        fit: BoxFit.cover),
-                  ),
-                )),
-            Opacity(
-              opacity: .6,
+              opacity: .5,
               child: Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -215,6 +230,6 @@ class _HomeState extends State<Home> {
           ],
         ),
       ),
-    ));
+    );
   }
 }
