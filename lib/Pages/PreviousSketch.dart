@@ -43,110 +43,124 @@ class _PreviousSketchState extends State<PreviousSketch> {
       }
     }
 
-    return SafeArea(
-      child: Scaffold(
-          body: Stack(children: <Widget>[
-        Opacity(
-            opacity: .6,
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topRight,
-                    colors: [Constants.primaryColor, Constants.secondaryColor]),
-              ),
-            )),
-        Container(
-            child: Column(children: <Widget>[
-          SizedBox(height: MediaQuery.of(context).size.height * .05),
-          Center(
-            child: _roundNumber > 0
-                ? FutureBuilder(
-                    future: _getImageBytes(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        List<int> bytes = snapshot.data;
-                        return Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Container(
-                                margin: EdgeInsets.symmetric(horizontal: 20.0),
-                                child: RichText(
-                                  text: TextSpan(
-                                    children: [
-                                      TextSpan(
-                                          text:
-                                              "Remember this image! You'll need to "),
-                                      TextSpan(
-                                          text: _isGuessing ? "guess" : "draw",
-                                          style: TextStyle(
-                                              color: Constants.primaryColor)),
-                                      TextSpan(text: " it!"),
-                                    ],
-                                    style: TextStyle(
-                                        color: Constants.textColor,
-                                        fontSize: 20,
-                                        fontFamily: "Montserrat"),
-                                  ),
-                                  textAlign: TextAlign.center,
-                                )),
-                            SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.height * .05),
-                            Container(
-                              width: MediaQuery.of(context).size.width * 0.6,
-                              height: MediaQuery.of(context).size.height * 0.6,
-                              child: Image.memory(bytes, fit: BoxFit.contain),
-                              decoration: BoxDecoration(color: Colors.white),
-                            ),
-                          ],
-                        );
-                      } else {
-                        return Center(child: CircularProgressIndicator());
-                      }
-                    },
-                  )
-                : Column(
-                    children: <Widget>[
-                      SizedBox(height: MediaQuery.of(context).size.height * .1),
-                      Text(
-                        "You chose to draw: ",
-                        style:
-                            TextStyle(fontSize: 30, color: Constants.textColor),
-                      ),
-                      SizedBox(
-                          height: MediaQuery.of(context).size.height * .05),
-                      Text(_myWord,
-                          style: TextStyle(
-                              fontSize: 50,
-                              color: Constants.primaryColor,
-                              fontWeight: FontWeight.bold)),
-                      SizedBox(
-                          height: MediaQuery.of(context).size.height * .05),
-                      Text("Good Luck!",
-                          style: TextStyle(
-                              fontSize: 30, color: Constants.textColor)),
-                      SizedBox(
-                          height: MediaQuery.of(context).size.height * .25),
-                    ],
+    return WillPopScope(
+        onWillPop: () => Future(() => false),
+        child: SafeArea(
+          child: Scaffold(
+              body: Stack(children: <Widget>[
+            Opacity(
+                opacity: .6,
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topRight,
+                        colors: [
+                          Constants.primaryColor,
+                          Constants.secondaryColor
+                        ]),
                   ),
-          ),
-          SizedBox(height: MediaQuery.of(context).size.height * .05),
-          Timer(
-            duration: Constants.viewSketchTimer,
-            callback: () {
-              if (_isGuessing) {
-                Navigator.of(context)
-                    .push(CustomFadeTransition.createRoute(GuessWord()));
-              } else {
-                Navigator.of(context)
-                    .push(CustomFadeTransition.createRoute(CreateSketch()));
-              }
-            },
-          ),
-        ])),
-      ])),
-    );
+                )),
+            Container(
+                child: Column(children: <Widget>[
+              SizedBox(height: MediaQuery.of(context).size.height * .05),
+              Center(
+                child: _roundNumber > 0
+                    ? FutureBuilder(
+                        future: _getImageBytes(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            List<int> bytes = snapshot.data;
+                            return Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                Container(
+                                    margin:
+                                        EdgeInsets.symmetric(horizontal: 20.0),
+                                    child: RichText(
+                                      text: TextSpan(
+                                        children: [
+                                          TextSpan(
+                                              text:
+                                                  "Remember this image! You'll need to "),
+                                          TextSpan(
+                                              text: _isGuessing
+                                                  ? "guess"
+                                                  : "draw",
+                                              style: TextStyle(
+                                                  color:
+                                                      Constants.primaryColor)),
+                                          TextSpan(text: " it!"),
+                                        ],
+                                        style: TextStyle(
+                                            color: Constants.textColor,
+                                            fontSize: 20,
+                                            fontFamily: "Montserrat"),
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    )),
+                                SizedBox(
+                                    height: MediaQuery.of(context).size.height *
+                                        .05),
+                                Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.6,
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.6,
+                                  child:
+                                      Image.memory(bytes, fit: BoxFit.contain),
+                                  decoration:
+                                      BoxDecoration(color: Colors.white),
+                                ),
+                              ],
+                            );
+                          } else {
+                            return Center(child: CircularProgressIndicator());
+                          }
+                        },
+                      )
+                    : Column(
+                        children: <Widget>[
+                          SizedBox(
+                              height: MediaQuery.of(context).size.height * .1),
+                          Text(
+                            "You chose to draw: ",
+                            style: TextStyle(
+                                fontSize: 30, color: Constants.textColor),
+                          ),
+                          SizedBox(
+                              height: MediaQuery.of(context).size.height * .05),
+                          Text(_myWord,
+                              style: TextStyle(
+                                  fontSize: 50,
+                                  color: Constants.primaryColor,
+                                  fontWeight: FontWeight.bold)),
+                          SizedBox(
+                              height: MediaQuery.of(context).size.height * .05),
+                          Text("Good Luck!",
+                              style: TextStyle(
+                                  fontSize: 30, color: Constants.textColor)),
+                          SizedBox(
+                              height: MediaQuery.of(context).size.height * .25),
+                        ],
+                      ),
+              ),
+              SizedBox(height: MediaQuery.of(context).size.height * .05),
+              Timer(
+                duration: Constants.viewSketchTimer,
+                callback: () {
+                  if (_isGuessing) {
+                    Navigator.of(context)
+                        .push(CustomFadeTransition.createRoute(GuessWord()));
+                  } else {
+                    Navigator.of(context)
+                        .push(CustomFadeTransition.createRoute(CreateSketch()));
+                  }
+                },
+              ),
+            ])),
+          ])),
+        ));
   }
 }

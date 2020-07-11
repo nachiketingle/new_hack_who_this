@@ -25,7 +25,7 @@ class _ChooseWordState extends State<ChooseWord> {
         User.currUser.accessCode, User.currUser.name, _selected);
   }
 
-    // listen for events
+  // listen for events
   void _listenStream() async {
     // initialize pusher
     List<String> events = ["onRoundStart"];
@@ -38,7 +38,7 @@ class _ChooseWordState extends State<ChooseWord> {
       if (json['event'] == "onRoundStart" && !_roundStarted) {
         _roundStarted = true;
         //Navigator.pushNamed(context, '/previousSketch', arguments: json['message']);
-        Navigator.push(context, CustomFadeTransition.createRoute(PreviousSketch(), args: json['message']));
+        Navigator.pushReplacement(context, CustomFadeTransition.createRoute(PreviousSketch(), args: json['message']));
       }
     });
   }
@@ -58,44 +58,33 @@ class _ChooseWordState extends State<ChooseWord> {
       _listenStream();
     }
 
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text("ChooseWord"),
-          actions: <Widget>[
-            // Temp button for testing
-            IconButton(
-              icon: Icon(Icons.navigate_next),
-              onPressed: () {
-                if (mounted) {
-                  Navigator.pushNamed(context, '/previousSketch');
-                }
-              },
-            )
-          ],
-        ),
-        body: Center(
-            child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: <Widget>[
-              // Display custom timer
-              Timer(
-                duration: Constants.chooseWordTimer,
-                callback: () {
-                  _submitWord();
-                },
-              ),
+    return WillPopScope(
+      onWillPop: () => Future(() => false),
+      child: SafeArea(
+        child: Scaffold(
+          body: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: <Widget>[
+                    // Display custom timer
+                    Timer(
+                      duration: Constants.chooseWordTimer,
+                      callback: () {
+                        _submitWord();
+                      },
+                    ),
 
-              // Display list of selectable words
-              _WordList(
-                  words: _words,
-                  selected: (selectedWord) {
-                    _selected = selectedWord;
-                  }),
-            ],
-          ),
-        )),
+                    // Display list of selectable words
+                    _WordList(
+                        words: _words,
+                        selected: (selectedWord) {
+                          _selected = selectedWord;
+                        }),
+                  ],
+                ),
+              )),
+        ),
       ),
     );
   }

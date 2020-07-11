@@ -39,52 +39,65 @@ class _ResultsSketchesState extends State<ResultsSketches> {
       word = ModalRoute.of(context).settings.arguments;
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("ResultsSketches"),
-      ),
-      body: Center(
-        child: FutureBuilder(
-          future: _getAllSketches(word),
-          builder: (context, snapshot) {
-            if(snapshot.hasData) {
-              Map<String, Image> map = snapshot.data;
-              List<String> names = map.keys.toList();
+    return SafeArea(
+      child: Scaffold(
+        body: Stack(
+            children: <Widget>[
+              Center(
+                child: FutureBuilder(
+                  future: _getAllSketches(word),
+                  builder: (context, snapshot) {
+                    if(snapshot.hasData) {
+                      Map<String, Image> map = snapshot.data;
+                      List<String> names = map.keys.toList();
+                      return ListView.builder(
+                          itemCount: names.length + 1,
+                          itemBuilder: (context, index) {
+                            if (index == 0) {
+                              return Center(child: Text("Word Chosen: " + word));
+                            }
+                            else if (index == names.length + 1) {
+                              return Center(child: Text("Word Guessed: " + wordGuessed));
+                            }
+                            else {
+                              return Card(
+                                child: Center(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                    children: <Widget>[
+                                      Text(names[index - 1]),
+                                      Container(
+                                        width: MediaQuery.of(context).size.width * 0.75,
+                                        height: MediaQuery.of(context).size.width * 0.75,
+                                        child: map[names[index - 1]],
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }
+                          }
+                      );
 
-              return ListView.builder(
-                  itemCount: names.length + 1,
-                  itemBuilder: (context, index) {
-                    if (index == 0) {
-                      return Text("Word Chosen: " + word);
-                    }
-                    else if (index == names.length + 1) {
-                      return Text("Word Guessed: " + wordGuessed);
                     }
                     else {
-                      return Card(
-                        child: Center(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: <Widget>[
-                              Text(names[index - 1]),
-                              Container(
-                                width: MediaQuery.of(context).size.width * 0.75,
-                                height: MediaQuery.of(context).size.width * 0.75,
-                                child: map[names[index - 1]],
-                              )
-                            ],
-                          ),
-                        ),
-                      );
+                      return CircularProgressIndicator();
                     }
-                  }
-              );
-
-            }
-            else {
-              return CircularProgressIndicator();
-            }
-          },
+                  },
+                ),
+              ),
+              Positioned(
+                top: 5,
+                left: 5,
+                child: IconButton(
+                  icon: Icon(Icons.arrow_back),
+                  iconSize: 24,
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ),
+            ]
         ),
       ),
     );

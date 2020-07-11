@@ -2,9 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:new_hack_who_this/Animations/Transitions.dart';
 import 'package:new_hack_who_this/Models/Sketch.dart';
 import 'package:new_hack_who_this/Models/User.dart';
 import 'package:new_hack_who_this/Network/PusherWeb.dart';
+import 'package:new_hack_who_this/Pages/ImportAllPages.dart';
 
 class SubmitSketch extends StatefulWidget {
   _SubmitSketchState createState() => _SubmitSketchState();
@@ -30,8 +32,8 @@ class _SubmitSketchState extends State<SubmitSketch> {
         _roundStarted = true;
         // wait a little to see own drawing
         await Future.delayed(Duration(seconds: 3));
-        Navigator.pushNamed(context, '/previousSketch',
-            arguments: json['message']);
+        //Navigator.pushNamed(context, '/previousSketch', arguments: json['message']);
+        Navigator.pushReplacement(context, CustomFadeTransition.createRoute(PreviousSketch(), args: json['message']));
       }
     });
   }
@@ -50,34 +52,28 @@ class _SubmitSketchState extends State<SubmitSketch> {
       _listenStream();
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("SubmitSketch"),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.navigate_next),
-            onPressed: () {
-              Navigator.of(context).pushNamed('/guessWord');
-            },
-          )
-        ],
+    return WillPopScope(
+      onWillPop: () => Future(() => false),
+      child: SafeArea(
+        child: Scaffold(
+          body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Text(
+                    "TIME UP!\nThis is what you drew.",
+                    style: TextStyle(fontSize: 20),
+                    textAlign: TextAlign.center,
+                  ),
+                  _sketch.image,
+                  Text(
+                    "Waiting for next",
+                    style: TextStyle(color: Colors.grey),
+                  )
+                ],
+              )),
+        ),
       ),
-      body: Center(
-          child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: <Widget>[
-          Text(
-            "TIME UP!\nThis is what you drew.",
-            style: TextStyle(fontSize: 20),
-            textAlign: TextAlign.center,
-          ),
-          _sketch.image,
-          Text(
-            "Waiting for next",
-            style: TextStyle(color: Colors.grey),
-          )
-        ],
-      )),
     );
   }
 }
