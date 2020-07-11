@@ -27,11 +27,11 @@ class _SketchCanvasState extends State<SketchCanvas> {
     super.initState();
   }
 
-  void getImageData() async {
+  Future<String> getImageData() async {
     ByteData bd = await SketchPainter(_lineList).getImageData();
-    print(bd.buffer.lengthInBytes);
-    String s = base64.encode(bd.buffer.asInt64List());
-    print(s);
+    Uint8List ints = bd.buffer.asUint8List();
+    String s = base64.encode(ints.toList());
+    return s;
   }
 
   @override
@@ -43,12 +43,13 @@ class _SketchCanvasState extends State<SketchCanvas> {
       height = (MediaQuery.of(context).size.height * 0.6).round();
     }
 
-    getImageData();
-
     width = (MediaQuery.of(context).size.width * 0.8).round();
     height = (MediaQuery.of(context).size.height * 0.6).round();
 
+    SketchPainter painter = SketchPainter(_lineList);
+
     return GestureDetector(
+      onTap: () => getImageData(),
       onPanStart: (details) {
         setState(() {
           points = List();
@@ -73,11 +74,11 @@ class _SketchCanvasState extends State<SketchCanvas> {
         });
       },
       child: CustomPaint(
-        foregroundPainter: SketchPainter(_lineList),
+        foregroundPainter: painter,
         child: Container(
           height: height * 1.0,
           width: width * 1.0,
-          color: Colors.green[50],
+          color: Colors.white,
         ),
       ),
     );
