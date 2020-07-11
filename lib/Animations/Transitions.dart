@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 /// Added in order to commit animations folder
 class CustomFadeTransition {
 
-  static Route createRoute(Widget nextPage) {
+  static Route createRoute(Widget nextPage, {Object args: null}) {
     return PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) => nextPage,
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
@@ -11,7 +11,10 @@ class CustomFadeTransition {
           opacity: animation,
           child: child,
         );
-      }
+      },
+      settings: RouteSettings(
+        arguments: args
+      ),
     );
   }
 

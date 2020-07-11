@@ -6,6 +6,7 @@ import 'package:new_hack_who_this/Helpers/Constants.dart';
 import 'package:new_hack_who_this/Models/User.dart';
 import 'package:new_hack_who_this/Network/SketchServices.dart';
 import 'package:new_hack_who_this/Pages/CreateSketch.dart';
+import 'package:new_hack_who_this/Pages/GuessWord.dart';
 import '../Animations/Transitions.dart';
 
 class PreviousSketch extends StatefulWidget {
@@ -67,9 +68,11 @@ class _PreviousSketchState extends State<PreviousSketch> {
                   duration: Constants.viewSketchTimer,
                   callback: () {
                     if (_isGuessing) {
-                      Navigator.of(context).pushNamed('/guessWord');
+                      //Navigator.of(context).pushNamed('/guessWord');
+                      Navigator.of(context).push(CustomFadeTransition.createRoute(GuessWord()));
                     } else {
-                      Navigator.of(context).pushNamed('/createSketch');
+                      //Navigator.of(context).pushNamed('/createSketch');
+                      Navigator.of(context).push(CustomFadeTransition.createRoute(CreateSketch()));
                     }
                   },
                 ),

@@ -4,6 +4,8 @@ import 'package:new_hack_who_this/Helpers/Constants.dart';
 import 'package:new_hack_who_this/Network/SketchServices.dart';
 import 'package:new_hack_who_this/Models/User.dart';
 import 'package:new_hack_who_this/Network/PusherWeb.dart';
+import 'package:new_hack_who_this/Pages/ImportAllPages.dart';
+import '../Animations/Transitions.dart';
 import 'dart:convert';
 
 class ChooseWord extends StatefulWidget {
@@ -35,7 +37,8 @@ class _ChooseWordState extends State<ChooseWord> {
       // when all users chose word
       if (json['event'] == "onRoundStart" && !_roundStarted) {
         _roundStarted = true;
-        Navigator.pushNamed(context, '/previousSketch', arguments: json['message']);
+        //Navigator.pushNamed(context, '/previousSketch', arguments: json['message']);
+        Navigator.push(context, CustomFadeTransition.createRoute(PreviousSketch(), args: json['message']));
       }
     });
   }
