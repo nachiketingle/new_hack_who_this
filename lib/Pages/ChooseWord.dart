@@ -58,33 +58,30 @@ class _ChooseWordState extends State<ChooseWord> {
       _listenStream();
     }
 
-    return WillPopScope(
-      onWillPop: () => Future(() => false),
-      child: SafeArea(
-        child: Scaffold(
-          body: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: <Widget>[
-                    // Display custom timer
-                    Timer(
-                      duration: Constants.chooseWordTimer,
-                      callback: () {
-                        _submitWord();
-                      },
-                    ),
+    return SafeArea(
+      child: Scaffold(
+        body: Center(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: <Widget>[
+                  // Display custom timer
+                  Timer(
+                    duration: Constants.chooseWordTimer,
+                    callback: () {
+                      _submitWord();
+                    },
+                  ),
 
-                    // Display list of selectable words
-                    _WordList(
-                        words: _words,
-                        selected: (selectedWord) {
-                          _selected = selectedWord;
-                        }),
-                  ],
-                ),
-              )),
-        ),
+                  // Display list of selectable words
+                  _WordList(
+                      words: _words,
+                      selected: (selectedWord) {
+                        _selected = selectedWord;
+                      }),
+                ],
+              ),
+            )),
       ),
     );
   }

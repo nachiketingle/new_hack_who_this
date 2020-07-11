@@ -52,27 +52,24 @@ class _SubmitSketchState extends State<SubmitSketch> {
       _listenStream();
     }
 
-    return WillPopScope(
-      onWillPop: () => Future(() => false),
-      child: SafeArea(
-        child: Scaffold(
-          body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  Text(
-                    "TIME UP!\nThis is what you drew.",
-                    style: TextStyle(fontSize: 20),
-                    textAlign: TextAlign.center,
-                  ),
-                  _sketch.image,
-                  Text(
-                    "Waiting for next",
-                    style: TextStyle(color: Colors.grey),
-                  )
-                ],
-              )),
-        ),
+    return SafeArea(
+      child: Scaffold(
+        body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                Text(
+                  "TIME UP!\nThis is what you drew.",
+                  style: TextStyle(fontSize: 20),
+                  textAlign: TextAlign.center,
+                ),
+                _sketch.image,
+                Text(
+                  "Waiting for next",
+                  style: TextStyle(color: Colors.grey),
+                )
+              ],
+            )),
       ),
     );
   }
