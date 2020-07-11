@@ -10,6 +10,7 @@ const {
 var router = express.Router();
 const ACCESS_LENGTH_CODE = 4;
 const NUM_CHOICES = 3;
+const HOURS = 2;
 
 // -----------------------------TESTING ENDPOINTS-------------------------------
 router.get('/', function(req, res, next) {
@@ -74,6 +75,14 @@ router.put('/create-group', async (req, res) => {
     if (doc == null) {
       // create the doc
       mongo.addDocument(group, 'group');
+
+      // Let the doc self destruct if it still exists after a long delay
+      setTimeout(async function(){
+        let doc = await mongo.findDocument(accessCode, 'group');
+        if(doc){
+          mongo.deleteDocument(accessCode, 'group')
+        }
+      }, 1000 * 60 * 60 * HOURS); // Timeout after HOURS hours
       break;
     }
     // retry access code
@@ -267,11 +276,11 @@ router.put('/submit-guess', async (req, res, next) => {
       dict[word] = {sketches: doc['wordSketches']};
       dict[word]['guess'] = doc['wordGuesses'][player];
     });
-
     pusher.triggerEvent(accessCode, 'onGameEnd', dict);
+
+    // Delete the document when we are done
+    mongo.deleteDocument(accessCode, 'group')
   }
-
-
 
   res.status(200).json({
     'message': 'Success'
