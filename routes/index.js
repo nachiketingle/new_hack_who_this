@@ -102,8 +102,9 @@ router.put('/join-group', async (req, res) => {
       // if name is valid
       if (!doc['members'].includes(name)) {
         // add members
-        mongo.pushUpdate(accessCode, 'members', name, 'group');
-        doc['members'].push(name);
+        await mongo.pushUpdate(accessCode, 'members', name, 'group');
+        // get updated document
+        doc = await mongo.findDocument(accessCode, 'group');
 
         // Send pusher triggerEvent
         pusher.triggerEvent(accessCode, 'onGuestJoin', doc['members']);
