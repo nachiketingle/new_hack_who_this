@@ -236,9 +236,6 @@ router.put('/submit-sketch', async (req, res, next) => {
     let dict = {};
     dict['roundNumber'] = round;
     if(round == doc['members'].length -1){
-      dict['isGuessing'] = false;
-    }
-    else{
       dict['isGuessing'] = true;
     }
     dict['playerToWord'] = doc['playerToWord'];
