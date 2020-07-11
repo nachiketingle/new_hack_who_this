@@ -53,7 +53,14 @@ class _CreateSketchState extends State<CreateSketch> {
               ),
               Positioned(
                 bottom: 10,
-                child: ColorPalette()
+                child: ColorPalette(
+                    undo: () {
+                      _sketchCanvasKey.currentState.undoLine();
+                    },
+                  clear: () {
+                      _sketchCanvasKey.currentState.clearCanvas();
+                  },
+                )
               )
             ],
           ),

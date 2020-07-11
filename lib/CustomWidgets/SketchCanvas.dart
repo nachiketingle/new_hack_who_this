@@ -15,7 +15,7 @@ class SketchCanvasState extends State<SketchCanvas> {
   Line _line;
   List<Offset> points;
   static Color chosenColor;
-  static int thickness;
+  static double thickness;
   static int width;
   static int height;
   int currLine = 0;
@@ -33,6 +33,18 @@ class SketchCanvasState extends State<SketchCanvas> {
     Uint8List ints = bd.buffer.asUint8List();
     String s = base64Encode(ints.toList());
     return s;
+  }
+
+  void undoLine() {
+    setState(() {
+      _lineList.removeLast();
+    });
+  }
+
+  void clearCanvas() {
+    setState(() {
+      _lineList.clear();
+    });
   }
 
   @override
@@ -58,9 +70,11 @@ class SketchCanvasState extends State<SketchCanvas> {
               points,
               Paint()
                 ..color = chosenColor
-                ..strokeWidth = 3
+                ..strokeWidth = thickness
                 ..isAntiAlias = true);
           _lineList.add(_line);
+          _line.points.add(details.localPosition);
+          _line.points.add(details.localPosition);
         });
       },
       onPanUpdate: (details) {
@@ -126,14 +140,18 @@ class SketchPainter extends CustomPainter {
 }
 
 class ColorPalette extends StatefulWidget {
-  ColorPalette();
+  ColorPalette({this.undo, this.clear});
 
   _ColorPaletteState createState() => _ColorPaletteState();
+
+  final Function undo;
+  final Function clear;
+
 }
 
 class _ColorPaletteState extends State<ColorPalette> {
   Color chosenColor;
-  int setThickness;
+  double setThickness;
 
   List<Color> _list = <Color>[
     Colors.black,
@@ -171,7 +189,7 @@ class _ColorPaletteState extends State<ColorPalette> {
     });
   }
 
-  void updateThickness(int thickness) {
+  void updateThickness(double thickness) {
     SketchCanvasState.thickness = thickness;
     setState(() {
       setThickness = thickness;
@@ -189,21 +207,62 @@ class _ColorPaletteState extends State<ColorPalette> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: chosenColor,
-      child: Container(
-        height: MediaQuery.of(context).size.height * 0.15,
-        width: MediaQuery.of(context).size.width * 0.9,
-        child: Center(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: _colorButtons(),
+    return Column(
+      children: <Widget>[
+        Card(
+          color: chosenColor,
+          child: Container(
+            height: MediaQuery.of(context).size.height * 0.075,
+            width: MediaQuery.of(context).size.width * 0.9,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: _colorButtons(),
+            )
           ),
         ),
-      ),
+
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            Container(
+              width: MediaQuery.of(context).size.width * 0.6,
+              child: Slider(
+                value: setThickness,
+                min: 1,
+                max: 10,
+                onChanged: (val) {
+                  updateThickness(val);
+                },
+                activeColor: chosenColor,
+              ),
+            ),
+
+            IconButton(
+              icon: Icon(Icons.undo),
+              color: chosenColor,
+              onPressed: () {
+                // remove the end of line
+                widget.undo.call();
+              },
+            ),
+
+            IconButton(
+              icon: Icon(Icons.clear),
+              color: chosenColor,
+              onPressed: () {
+                // delete list
+                widget.clear.call();
+              },
+            )
+
+          ],
+        )
+
+      ],
     );
   }
 }
+
 
 class Line {
   List<Offset> points = List();
