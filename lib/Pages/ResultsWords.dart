@@ -37,79 +37,76 @@ class _ResultsWordsState extends State<ResultsWords> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () => Future(() => false),
-      child: SafeArea(
-        child: Scaffold(
-          body: Stack(
-            children: <Widget>[
-              Center(
-                child: FutureBuilder(
-                    future: _getWords(),
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        List<String> words = snapshot.data;
-                        return Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            children: <Widget>[
-                              Container(
-                                  height: MediaQuery.of(context).size.height * 0.15,
-                                  child: Center(
-                                      child: Text(
-                                    "# CORRECT: " + numCorrect.toString(),
-                                    style: TextStyle(fontSize: 20),
-                                  ))),
-                              Expanded(
-                                child: ListView.builder(
-                                  physics: AlwaysScrollableScrollPhysics(),
-                                  shrinkWrap: true,
-                                  itemCount: words.length,
-                                  itemBuilder: (context, index) {
-                                    return Card(
-                                      child: InkWell(
-                                        child: Container(
-                                          height:
-                                              MediaQuery.of(context).size.height * 0.2,
-                                          child: Center(
-                                            child: Text(
-                                              words[index],
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 20),
-                                            ),
+    return SafeArea(
+      child: Scaffold(
+        body: Stack(
+          children: <Widget>[
+            Center(
+              child: FutureBuilder(
+                  future: _getWords(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      List<String> words = snapshot.data;
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: <Widget>[
+                            Container(
+                                height: MediaQuery.of(context).size.height * 0.15,
+                                child: Center(
+                                    child: Text(
+                                  "# CORRECT: " + numCorrect.toString(),
+                                  style: TextStyle(fontSize: 20),
+                                ))),
+                            Expanded(
+                              child: ListView.builder(
+                                physics: AlwaysScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                itemCount: words.length,
+                                itemBuilder: (context, index) {
+                                  return Card(
+                                    child: InkWell(
+                                      child: Container(
+                                        height:
+                                            MediaQuery.of(context).size.height * 0.2,
+                                        child: Center(
+                                          child: Text(
+                                            words[index],
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 20),
                                           ),
                                         ),
-                                        onTap: () {
-                                          _viewWordSketches(words[index]);
-                                        },
                                       ),
-                                    );
-                                  },
-                                ),
+                                      onTap: () {
+                                        _viewWordSketches(words[index]);
+                                      },
+                                    ),
+                                  );
+                                },
                               ),
-                            ],
-                          ),
-                        );
-                      } else {
-                        return CircularProgressIndicator();
-                      }
-                    }),
+                            ),
+                          ],
+                        ),
+                      );
+                    } else {
+                      return CircularProgressIndicator();
+                    }
+                  }),
+            ),
+            Positioned(
+              top: 5,
+              right: 5,
+              child: IconButton(
+                icon: Icon(Icons.home),
+                iconSize: 24,
+                onPressed: () {
+                  Navigator.pushReplacement(context, CustomFadeTransition.createRoute(Home()));
+                },
               ),
-              Positioned(
-                top: 5,
-                right: 5,
-                child: IconButton(
-                  icon: Icon(Icons.home),
-                  iconSize: 24,
-                  onPressed: () {
-                    Navigator.pushReplacement(context, CustomFadeTransition.createRoute(Home()));
-                  },
-                ),
-              ),
+            ),
 
-            ],
-          ),
+          ],
         ),
       ),
     );

@@ -61,54 +61,48 @@ class _ChooseWordState extends State<ChooseWord> {
       _listenStream();
     }
 
-    return WillPopScope(
-      onWillPop: () => Future(() => false),
-      child: SafeArea(
-        child: Scaffold(
-            body: Stack(children: <Widget>[
-          Opacity(
-              opacity: .6,
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                      begin: Alignment.bottomCenter,
-                      end: Alignment.topRight,
-                      colors: [
-                        Constants.primaryColor,
-                        Constants.secondaryColor
-                      ]),
-                ),
-              )),
-          Center(
-              child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: <Widget>[
-                SizedBox(height: MediaQuery.of(context).size.height * .05),
-                Text(
-                  "Choose a word to draw!",
-                  style: TextStyle(color: Constants.textColor, fontSize: 23),
-                ),
-                SizedBox(height: MediaQuery.of(context).size.height * .05),
-                // Display list of selectable words
-                _WordList(
-                    words: _words,
-                    selected: (selectedWord) {
-                      _selected = selectedWord;
-                    }),
-                SizedBox(height: MediaQuery.of(context).size.height * .05),
-                // Display custom timer
-                Timer(
-                  duration: Constants.chooseWordTimer,
-                  callback: () {
-                    _submitWord();
-                  },
-                ),
-              ],
-            ),
-          )),
-        ])),
-      ),
+    return SafeArea(
+      child: Scaffold(
+          body: Stack(children: <Widget>[
+        Opacity(
+            opacity: .6,
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topRight,
+                    colors: [Constants.primaryColor, Constants.secondaryColor]),
+              ),
+            )),
+        Center(
+            child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: <Widget>[
+              SizedBox(height: MediaQuery.of(context).size.height * .05),
+              Text(
+                "Choose a word to draw!",
+                style: TextStyle(color: Constants.textColor, fontSize: 23),
+              ),
+              SizedBox(height: MediaQuery.of(context).size.height * .05),
+              // Display list of selectable words
+              _WordList(
+                  words: _words,
+                  selected: (selectedWord) {
+                    _selected = selectedWord;
+                  }),
+              SizedBox(height: MediaQuery.of(context).size.height * .05),
+              // Display custom timer
+              Timer(
+                duration: Constants.chooseWordTimer,
+                callback: () {
+                  _submitWord();
+                },
+              ),
+            ],
+          ),
+        )),
+      ])),
     );
   }
 }
