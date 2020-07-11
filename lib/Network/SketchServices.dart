@@ -21,6 +21,7 @@ class SketchServices {
     json['word'] = word;
     print("Requestion Sketch for " + word);
     Map<String, dynamic> response = await Network.get("latest-sketch", json);
+    print("Response from latest sketch " + response.toString());
     return response["sketch"];
   }
 
