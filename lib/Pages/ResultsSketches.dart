@@ -64,6 +64,7 @@ class _ResultsSketchesState extends State<ResultsSketches> {
                       return Card(
                         child: Center(
                           child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: <Widget>[
                               Text(names[index - 1]),
                               map[names[index - 1]]

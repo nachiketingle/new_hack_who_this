@@ -88,9 +88,13 @@ class _PreviousSketchState extends State<PreviousSketch> {
                                       " it!",
                                   style: TextStyle(fontSize: 20),
                                 ),
-                                Image.memory(
-                                  bytes,
-                                  fit: BoxFit.contain
+                                Container(
+                                  width: MediaQuery.of(context).size.width * 0.75,
+                                  height: MediaQuery.of(context).size.height * 0.75,
+                                  child: Image.memory(
+                                    bytes,
+                                    fit: BoxFit.contain
+                                  ),
                                 ),
                               ],
                             );
