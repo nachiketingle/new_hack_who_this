@@ -27,8 +27,6 @@ class MyApp extends StatelessWidget {
       ),
       routes: {
         '/': (context) => Home(),
-        '/createGroup': (context) => CreateGroup(),
-        '/joinGroup': (context) => JoinGroup(),
         '/lobby': (context) => Lobby(),
         '/chooseWord': (context) => ChooseWord(),
         '/previousSketch': (context) => PreviousSketch(),
