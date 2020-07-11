@@ -15,10 +15,8 @@ class PusherWeb {
   Future<void> initPusher() async {
     try {
       print("Starting init pusher");
-      await Pusher.init(
-          DotEnv().env['PUSHER_KEY'],
-          PusherOptions(cluster: DotEnv().env['PUSHER_CLUSTER'])
-      );
+      await Pusher.init(DotEnv().env['PUSHER_KEY'],
+          PusherOptions(cluster: DotEnv().env['PUSHER_CLUSTER']));
       print("Successfully init pusher");
     } catch (e) {
       print(e.message);
@@ -28,8 +26,8 @@ class PusherWeb {
   void connectPusher() {
     Pusher.connect(
         onConnectionStateChange: (ConnectionStateChange connectionState) async {
-          lastConnectionState = connectionState.currentState;
-        }, onError: (ConnectionError e) {
+      lastConnectionState = connectionState.currentState;
+    }, onError: (ConnectionError e) {
       print("Error: ${e.message}");
     });
   }
@@ -54,11 +52,13 @@ class PusherWeb {
     _eventData.close();
   }
 
-  Future<void> firePusher(String channelName, String eventName) async {
+  Future<void> firePusher(String channelName, List<String> eventNames) async {
     await initPusher();
     connectPusher();
     await subscribePusher(channelName);
-    bindEvent(eventName);
-    print("Channel Name: " + channelName + " Event Name: " + eventName);
+    for (String eventName in eventNames) {
+      bindEvent(eventName);
+      print("Channel Name: " + channelName + " Event Name: " + eventName);
+    }
   }
 }

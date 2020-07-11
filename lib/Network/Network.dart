@@ -23,7 +23,7 @@ class Network {
       type = "";
     }
     headers["Content-Type"] = 'application/json';
-    print("baseURL: " + baseURL);
+    print(baseURL);
     final response = await http.put(baseURL + type, body: body);
     printResponse("PUT", response);
     return jsonDecode(response.body);
