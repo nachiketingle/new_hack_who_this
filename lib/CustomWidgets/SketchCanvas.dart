@@ -100,7 +100,7 @@ class SketchPainter extends CustomPainter {
 
     ui.Picture picture = recorder.endRecording();
     ui.Image img = await picture.toImage(width, height);
-    ByteData data = await img.toByteData(format: ui.ImageByteFormat.rawUnmodified);
+    ByteData data = await img.toByteData(format: ui.ImageByteFormat.png);
     return data;
   }
 
