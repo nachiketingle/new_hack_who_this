@@ -10,6 +10,7 @@ const {
 var router = express.Router();
 const ACCESS_LENGTH_CODE = 4;
 const NUM_CHOICES = 3;
+const HOURS = 2;
 
 // -----------------------------TESTING ENDPOINTS-------------------------------
 router.get('/', function(req, res, next) {
@@ -32,7 +33,6 @@ router.put('/rotate', async (req, res) => {
   let doc = await mongo.findDocument(accessCode, 'group');
   rotateDict(accessCode, doc['playerChosenWord'], doc['members'], parseInt(round));
   res.send(200);
-
 })
 
 // ---------------------------- REAL ENDPOINTS ---------------------------------
@@ -45,7 +45,6 @@ router.put('/create-group', async (req, res) => {
 
   // If body does not have 'groupName' and 'name', return an error and exit
   if(!(groupName && name)){
-    console.log(groupName, name);
     res.status(400).json({
       'message': 'Bad Request'
     });
@@ -76,6 +75,14 @@ router.put('/create-group', async (req, res) => {
     if (doc == null) {
       // create the doc
       mongo.addDocument(group, 'group');
+
+      // Let the doc self destruct if it still exists after a long delay
+      setTimeout(async function(){
+        let doc = await mongo.findDocument(accessCode, 'group');
+        if(doc){
+          mongo.deleteDocument(accessCode, 'group')
+        }
+      }, 1000 * 60 * 60 * HOURS); // Timeout after HOURS hours
       break;
     }
     // retry access code
@@ -171,13 +178,29 @@ router.put('/submit-word', async (req, res, next) => {
   let name = req.body['name'];
   let word = req.body['word'];
 
+  // Update the document
   await mongo.updateDocument(accessCode, `playerToWord.${name}`, word, 'group');
   await mongo.updateDocument(accessCode, `playerChosenWord.${name}`, word, 'group');
   await mongo.updateDocument(accessCode, `wordSketches.${word}`, [], 'group');
+  await mongo.pushUpdate(accessCode, 'submittedMembers', name, 'group');
 
   let doc = await mongo.findDocument(accessCode, 'group');
-  res.status(200).json(doc['playerToWord']);
 
+  // If all words are submitted, send a onRoundStart notification
+  let submittedCount = doc['submittedMembers'].length;
+  if (submittedCount >= doc['members'].length){
+    // Reset the submittedList
+    await mongo.updateDocument(accessCode, `submittedMembers`, [], 'group');
+
+    // Send a pusher notification
+    let dict = {};
+    dict['roundNumber'] = 0;
+    dict['isGuessing'] = false;
+    dict['playerToWord'] = doc['playerToWord'];
+    pusher.triggerEvent(accessCode, 'onRoundStart', dict);
+  }
+
+  res.status(200).json(doc['playerToWord']);
 });
 
 router.put('/submit-sketch', async (req, res, next) => {
@@ -199,11 +222,27 @@ router.put('/submit-sketch', async (req, res, next) => {
   let submittedCount = doc['submittedMembers'].length;
 
   // If all sketches submitted for current round, rotate assignment, start next round and send player to word mapping
-  if (submittedCount == doc['members'].length){
+  if (submittedCount >= doc['members'].length){
     // Get the round number from number of submitted sketches
     let word = Object.keys(doc['wordSketches'])[0];
     let round = doc['wordSketches'][word].length;
     rotateDict(accessCode, doc['playerChosenWord'], doc['members'], round);
+
+    // Reset the submittedList
+    await mongo.updateDocument(accessCode, `submittedMembers`, [], 'group');
+
+    // Trigger a notification to start the next round
+    doc = await mongo.findDocument(accessCode, 'group');
+    let dict = {};
+    dict['roundNumber'] = round;
+    if(round == doc['members'].length -1){
+      dict['isGuessing'] = false;
+    }
+    else{
+      dict['isGuessing'] = true;
+    }
+    dict['playerToWord'] = doc['playerToWord'];
+    pusher.triggerEvent(accessCode, 'onRoundStart', dict);
   }
 
   res.status(200).json({
@@ -218,7 +257,30 @@ router.put('/submit-guess', async (req, res, next) => {
   let name = req.body['name'];
   let guess = req.body['guess'];
 
+  // Update the document
   await mongo.updateDocument(accessCode, `wordGuesses.${name}`, guess, 'group');
+  await mongo.pushUpdate(accessCode, 'submittedMembers', name, 'group');
+
+  let doc = await mongo.findDocument(accessCode, 'group');
+
+  // If all guesses are submitted, send an onGameEnd notification
+  let submittedCount = doc['submittedMembers'].length;
+  if (submittedCount >= doc['members'].length){
+    // Send a pusher notification to trigger game end
+    await mongo.updateDocument(accessCode, `submittedMembers`, [], 'group');
+
+    let dict = {};
+    Object.keys(doc['playerToWord']).forEach( player => {
+      let word = doc['playerToWord'][player];
+      // player is guessing word
+      dict[word] = {sketches: doc['wordSketches']};
+      dict[word]['guess'] = doc['wordGuesses'][player];
+    });
+    pusher.triggerEvent(accessCode, 'onGameEnd', dict);
+
+    // Delete the document when we are done
+    mongo.deleteDocument(accessCode, 'group')
+  }
 
   res.status(200).json({
     'message': 'Success'
@@ -233,8 +295,6 @@ function rotateDict(accessCode, playerChosenWord, members, offset){
     // receivingMember receives currentWord
     let currentWord = playerChosenWord[members[i]];
     let receivingMember = members[(i + offset) % members.length];
-    console.log(currentWord, receivingMember);
-    console.log((i + offset));
 
     mongo.updateDocument(accessCode, `playerToWord.${receivingMember}`, currentWord, 'group');
   }
