@@ -2,8 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:new_hack_who_this/Models/User.dart';
 import '../Helpers/Constants.dart';
-import './JoinGroup.dart';
-import './CreateGroup.dart';
 import 'package:keyboard_visibility/keyboard_visibility.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:new_hack_who_this/Network/GroupServices.dart';
