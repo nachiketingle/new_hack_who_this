@@ -1,6 +1,4 @@
 export 'Home.dart';
-export 'CreateGroup.dart';
-export 'JoinGroup.dart';
 export 'Lobby.dart';
 export 'ChooseWord.dart';
 export 'PreviousSketch.dart';
