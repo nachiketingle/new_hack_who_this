@@ -7,8 +7,6 @@ class GuessWord extends StatefulWidget {
 
 class _GuessWordState extends State<GuessWord> {
 
-  int numCorrect = 0;
-
   /// Get list of words from server
   Future<List<String>> _getWords() async {
     List<String> words = List();
@@ -17,8 +15,14 @@ class _GuessWordState extends State<GuessWord> {
     words.add("Cucumber");
 
     await Future.delayed(Duration(seconds: 3));
-    numCorrect = 2;
     return words;
+  }
+
+  /// Submit guessed word
+  void _guessedWord(String word) {
+    // Tell server
+
+    Navigator.pushNamed(context, '/resultsWords');
   }
 
   @override
@@ -40,7 +44,7 @@ class _GuessWordState extends State<GuessWord> {
                     Container(
                         height: MediaQuery.of(context).size.height * 0.15,
                         child: Center(
-                            child: Text("# Correct: " + numCorrect.toString(), style: TextStyle(fontSize: 20),)
+                            child: Text("What is this a picture of?", style: TextStyle(fontSize: 20),)
                         )
                     ),
                     
@@ -59,7 +63,7 @@ class _GuessWordState extends State<GuessWord> {
                                 ),
                               ),
                               onTap: () {
-
+                                _guessedWord(words[index]);
                               },
                             ),
                           );
