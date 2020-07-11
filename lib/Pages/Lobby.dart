@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
+import 'package:new_hack_who_this/Helpers/Constants.dart';
 import 'package:new_hack_who_this/Models/User.dart';
 import 'package:new_hack_who_this/Network/PusherWeb.dart';
 import 'package:new_hack_who_this/Network/GroupServices.dart';
@@ -15,6 +15,7 @@ class _LobbyState extends State<Lobby> {
   List<User> _userList = List();
   final GlobalKey<AnimatedListState> _animatedListKey = GlobalKey();
   PusherWeb pusher;
+  List<String> events = ["onGuestJoin", "onGameStart"];
 
   void _startSketching() {
     GroupServices.startGame(_user.accessCode);
@@ -41,7 +42,6 @@ class _LobbyState extends State<Lobby> {
   // listen for events
   void _listenStream() async {
     // initialize pusher
-    List<String> events = ["onGuestJoin", "onGameStart"];
     await pusher.firePusher(_user.accessCode, events);
     // add listener for events
     pusher.eventStream.listen((event) {
@@ -82,6 +82,14 @@ class _LobbyState extends State<Lobby> {
     pusher = PusherWeb();
   }
 
+  void dispose() {
+    for (String event in events) {
+      pusher.unbindEvent(event);
+    }
+    pusher.unSubscribePusher(User.currUser.accessCode);
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     if (!_loaded) {
@@ -94,24 +102,36 @@ class _LobbyState extends State<Lobby> {
       appBar: AppBar(
         title: Text("Lobby"),
       ),
-      body: Center(
-          child: Column(
-        children: <Widget>[
-          Text("Group Name: ${_user.groupName}"),
-          Text("Access Code: ${_user.accessCode}"),
-          Expanded(
-            child: AnimatedList(
-              key: _animatedListKey,
-              shrinkWrap: true,
-              initialItemCount: _userList.length,
-              itemBuilder: (context, index, animation) {
-                return _userBuilder(
-                    _userList[index], index, context, animation);
-              },
+      body: Stack(children: <Widget>[
+        Opacity(
+            opacity: .6,
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topRight,
+                    colors: [Constants.primaryColor, Constants.secondaryColor]),
+              ),
+            )),
+        Center(
+            child: Column(
+          children: <Widget>[
+            Text("Group Name: ${_user.groupName}"),
+            Text("Access Code: ${_user.accessCode}"),
+            Expanded(
+              child: AnimatedList(
+                key: _animatedListKey,
+                shrinkWrap: true,
+                initialItemCount: _userList.length,
+                itemBuilder: (context, index, animation) {
+                  return _userBuilder(
+                      _userList[index], index, context, animation);
+                },
+              ),
             ),
-          ),
-        ],
-      )),
+          ],
+        ))
+      ]),
       floatingActionButton: _user.isHost
           ? FloatingActionButton.extended(
               label: Text("Start"),
