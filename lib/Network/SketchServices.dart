@@ -16,10 +16,10 @@ class SketchServices {
   }
 
   static Future<String> latestSketch(String accessCode, String word) async {
-    Map<String, dynamic> json = Map();
+    Map<String, String> json = Map();
     json['accessCode'] = accessCode;
     json['word'] = word;
-    print("Requestion Sketch for " + word);
+    print("Requesting Sketch for " + word);
     Map<String, dynamic> response = await Network.get("latest-sketch", json);
     print("Response from latest sketch " + response.toString());
     return response["sketch"];
@@ -38,11 +38,12 @@ class SketchServices {
 
   static Future<List<dynamic>> promptGuess(
       String accessCode, String name) async {
-    Map<String, dynamic> json = Map();
+    Map<String, String> json = Map();
     json['accessCode'] = accessCode;
     json['name'] = name;
     print("Prompting for Guess Options");
     Map<String, dynamic> response = await Network.get("prompt-guess", json);
+    print("Prompt Guess REsponse: " + response.toString());
     return response["words"];
   }
 
