@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:new_hack_who_this/Network/ResultsServices.dart';
+import 'package:new_hack_who_this/Models/User.dart';
+import 'package:new_hack_who_this/Models/Sketch.dart';
 
 class ResultsSketches extends StatefulWidget {
 
@@ -12,12 +15,21 @@ class _ResultsSketchesState extends State<ResultsSketches> {
   String wordGuessed;
 
   Future<Map<String, Image>> _getAllSketches(String word) async{
-
-    wordGuessed = "Absolutely Nothing";
-
-    await Future.delayed(Duration(seconds: 3));
-
-    return Map();
+    // assign the word getting details for
+    wordGuessed = word;
+    Map<String, Image> details = new Map<String,Image>();
+    // do api call to get details
+    Map<String, dynamic> result =
+        await ResultsServices.resultsDetails(User.currUser.accessCode, word);
+    // get the list of details
+    List<Map<String, dynamic>> sketchDetails = result["details"];
+    for(Map<String, dynamic> sketchDetail in sketchDetails) {
+      // map the drawer to the sketch image
+      String drawer = sketchDetail["drawer"];
+      String sketch = sketchDetail["sketch"];
+      details[drawer] = Sketch(sketch).image;
+    }
+    return details;
   }
 
   @override

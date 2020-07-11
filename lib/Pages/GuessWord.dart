@@ -45,7 +45,7 @@ class _GuessWordState extends State<GuessWord> {
       // game end event
       if (json['event'] == "onGameEnd") {
         Navigator.of(context)
-            .pushNamed('/resultsWords', arguments: json['message']);
+            .pushNamed('/resultsWords');
       }
     });
   }
