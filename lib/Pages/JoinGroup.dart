@@ -77,7 +77,7 @@ class _JoinGroupState extends State<JoinGroup> {
               children: <Widget>[
                 TextField(
                   controller: _accessCodeController,
-                  decoration: InputDecoration(hintText: "Group Name"),
+                  decoration: InputDecoration(hintText: "Access Code"),
                 ),
                 TextField(
                   controller: _usernameController,

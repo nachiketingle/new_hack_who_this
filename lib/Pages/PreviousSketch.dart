@@ -6,8 +6,19 @@ class PreviousSketch extends StatefulWidget {
 }
 
 class _PreviousSketchState extends State<PreviousSketch> {
+  bool _loaded;
+  int _roundNumber;
+  bool _isGuessing;
+  Map<dynamic, dynamic> playerToWord;
+
   @override
   Widget build(BuildContext context) {
+    if(!_loaded) {
+      _loaded = true;
+      Map<String, dynamic> roundInfo = ModalRoute.of(context).settings.arguments;
+      print(roundInfo);
+    }
+
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(

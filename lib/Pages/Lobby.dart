@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:new_hack_who_this/Models/User.dart';
 import 'package:new_hack_who_this/Network/PusherWeb.dart';
+import 'package:new_hack_who_this/Network/GroupServices.dart';
 import 'dart:convert';
 
 class Lobby extends StatefulWidget {
@@ -16,7 +17,7 @@ class _LobbyState extends State<Lobby> {
   PusherWeb pusher;
 
   void _startSketching() {
-    Navigator.of(context).pushNamed('/chooseWord');
+    GroupServices.startGame(_user.accessCode);
   }
 
   void _loadUsers() async {
@@ -59,6 +60,18 @@ class _LobbyState extends State<Lobby> {
                 duration: Duration(milliseconds: 500));
           }
         });
+      } else if (json['event'] == "onGameStart") {
+        Map<String, dynamic> wordChoices = json['message'];
+        List<String> myWords = [];
+        for (String player in wordChoices.keys) {
+          if (player == User.currUser.name) {
+            for (String word in wordChoices[player]) {
+              myWords.add(word);
+            }
+          }
+        }
+        print("Starting Game with words " + myWords.toString());
+        Navigator.of(context).pushNamed('/chooseWord', arguments: myWords);
       }
     });
   }

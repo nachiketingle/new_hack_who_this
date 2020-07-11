@@ -19,4 +19,12 @@ class GroupServices {
     Map<String, dynamic> list = await Network.put('join-group', json);
     return list;
   }
+
+  static Future<Map<String, dynamic>> startGame(String accessCode) async {
+    Map<String, dynamic> json = Map();
+    json['accessCode'] = accessCode;
+    print("Starting the game");
+    Map<String, dynamic> wordChoices = await Network.put('start-game', json);
+    return wordChoices;
+  }
 }
