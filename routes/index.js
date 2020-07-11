@@ -238,6 +238,9 @@ router.put('/submit-sketch', async (req, res, next) => {
     if(round == doc['members'].length -1){
       dict['isGuessing'] = true;
     }
+    else{
+      dict['isGuessing'] = false;
+    }
     dict['playerToWord'] = doc['playerToWord'];
     pusher.triggerEvent(accessCode, 'onRoundStart', dict);
   }
