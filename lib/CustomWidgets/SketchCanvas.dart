@@ -20,6 +20,7 @@ class _SketchCanvasState extends State<SketchCanvas> {
 
   @override
   Widget build(BuildContext context) {
+
     return GestureDetector(
       onPanStart: (details) {
         setState(() {
@@ -62,11 +63,7 @@ class SketchPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    Paint paint = Paint()
-      ..color = Colors.deepPurple
-      ..isAntiAlias = true
-      ..strokeWidth = 3.0;
-
+    Paint paint;
     for(Line line in lines) {
       List<Offset> points = line.points;
       paint = line.paint;
