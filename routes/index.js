@@ -167,7 +167,7 @@ router.put('/start-game', async (req, res, next) => {
     availableWords[doc['members'][Math.floor(i/NUM_CHOICES)]].push(word);
   }
   // Broadcast categories to channel
-  pusher.triggerEvent(accessCode, 'onGameStart', {availableWords: availableWords});
+  pusher.triggerEvent(accessCode, 'onGameStart', availableWords);
   // Send response
   res.status(200).json({availableWords: availableWords});
 });
