@@ -276,7 +276,10 @@ router.put('/submit-guess', async (req, res, next) => {
       dict[word]['guess'] = doc['wordGuesses'][player];
     });
     console.log(doc['submittedMembers']);
-    pusher.triggerEvent(accessCode, 'onGameEnd', dict);
+
+    setTimeout(function(){
+      pusher.triggerEvent(accessCode, 'onGameEnd', dict);
+    }, 1000 * 5); // Timeout after HOURS hours
 
     // Delete the document when we are done
     mongo.deleteDocument(accessCode, 'group')
