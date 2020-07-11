@@ -15,8 +15,9 @@ class _GuessWordState extends State<GuessWord> {
   /// Get list of words from server
   Future<List<String>> _getWords() async {
     List<String> words = List();
-    for (String word in await SketchServices.promptGuess(
-        User.currUser.accessCode, User.currUser.name)) {
+    List<dynamic> results = await SketchServices.promptGuess(
+        User.currUser.accessCode, User.currUser.name);
+    for (String word in results) {
       words.add(word);
     }
     return words;

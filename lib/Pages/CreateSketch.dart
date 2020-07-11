@@ -16,8 +16,11 @@ class _CreateSketchState extends State<CreateSketch> {
   GlobalKey<SketchCanvasState> _sketchCanvasKey = GlobalKey();
 
   Future<void> _submitSketch() async {
+    // get encoded string for sketch
     String base64String = await _sketchCanvasKey.currentState.getImageData();
+    // submit the sketch to the server
     SketchServices.submitSketch(User.currUser.accessCode, base64String, User.currUser.name);
+    // view sketch
     Navigator.pushNamed(context, '/submitSketch', arguments: Sketch(base64String));
   }
 
