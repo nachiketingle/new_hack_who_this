@@ -7,10 +7,10 @@ import 'dart:convert';
 class SketchCanvas extends StatefulWidget {
   SketchCanvas({Key key}) : super(key: key);
 
-  _SketchCanvasState createState() => _SketchCanvasState();
+  SketchCanvasState createState() => SketchCanvasState();
 }
 
-class _SketchCanvasState extends State<SketchCanvas> {
+class SketchCanvasState extends State<SketchCanvas> {
   final List<Line> _lineList = List();
   Line _line;
   List<Offset> points;
@@ -31,7 +31,7 @@ class _SketchCanvasState extends State<SketchCanvas> {
   Future<String> getImageData() async {
     ByteData bd = await SketchPainter(_lineList).getImageData();
     Uint8List ints = bd.buffer.asUint8List();
-    String s = base64.encode(ints.toList());
+    String s = base64Encode(ints.toList());
     return s;
   }
 
@@ -79,7 +79,7 @@ class _SketchCanvasState extends State<SketchCanvas> {
         child: Container(
           height: height * 1.0,
           width: width * 1.0,
-          color: Colors.white,
+          color: Colors.green[50],
         ),
       ),
     );
@@ -93,8 +93,8 @@ class SketchPainter extends CustomPainter {
   static Canvas activeCanvas;
 
   Future<ByteData> getImageData() async {
-    int width = _SketchCanvasState.width;
-    int height = _SketchCanvasState.height;
+    int width = SketchCanvasState.width;
+    int height = SketchCanvasState.height;
     final ui.PictureRecorder recorder = ui.PictureRecorder();
     this.paint(Canvas(recorder), new Size(width * 1.0, height * 1.0));
 
@@ -165,14 +165,14 @@ class _ColorPaletteState extends State<ColorPalette> {
   }
 
   void updateColor(Color color) {
-    _SketchCanvasState.chosenColor = color;
+    SketchCanvasState.chosenColor = color;
     setState(() {
       chosenColor = color;
     });
   }
 
   void updateThickness(int thickness) {
-    _SketchCanvasState.thickness = thickness;
+    SketchCanvasState.thickness = thickness;
     setState(() {
       setThickness = thickness;
     });
@@ -182,9 +182,9 @@ class _ColorPaletteState extends State<ColorPalette> {
   void initState() {
     super.initState();
     chosenColor = _list.first;
-    _SketchCanvasState.chosenColor = chosenColor;
+    SketchCanvasState.chosenColor = chosenColor;
     setThickness = 3;
-    _SketchCanvasState.thickness = setThickness;
+    SketchCanvasState.thickness = setThickness;
   }
 
   @override
