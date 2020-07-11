@@ -27,6 +27,7 @@ class _SketchCanvasState extends State<SketchCanvas> {
     super.initState();
   }
 
+  /// Get data image from canvas and convert to string
   Future<String> getImageData() async {
     ByteData bd = await SketchPainter(_lineList).getImageData();
     Uint8List ints = bd.buffer.asUint8List();
