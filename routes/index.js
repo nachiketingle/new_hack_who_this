@@ -287,6 +287,16 @@ router.put('/submit-guess', async (req, res, next) => {
   })
 });
 
+router.get('/latest-sketch', async (req, res, next) => {
+  let accessCode = req.query.accessCode;
+  let word = req.query.word;
+
+  let doc = await mongo.findDocument(accessCode, 'group');
+  let sketches = doc['wordSketches'][word];
+  let latest_sketch = sketches[sketches.length - 1];
+  res.status(200).json({sketch: latest_sketch});
+});
+
 // ---------------------------HELPER FUNCTIONS----------------------------------
 
 // Mutates a dictionary by rotating it by an offset
