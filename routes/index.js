@@ -297,6 +297,25 @@ router.get('/latest-sketch', async (req, res, next) => {
   res.status(200).json({sketch: latest_sketch});
 });
 
+router.get('/prompt-guess', async (req, res, next) => {
+  let accessCode = req.query.accessCode;
+  let name = req.query.name;
+
+  let doc = await mongo.findDocument(accessCode, 'group');
+  let correctWord = doc['playerToWord'][name];
+  let wordChoices = [correctWord];
+
+  let words = [...wordBank];
+  for(let i = 0; i < 4; i++){
+    let rand = Math.floor(Math.random() * words.length);
+    let word = words[rand];
+    words.splice(rand,1);
+    wordChoices.push(word);
+  }
+
+  res.status(200).json(shuffle(wordChoices));
+});
+
 // ---------------------------HELPER FUNCTIONS----------------------------------
 
 // Mutates a dictionary by rotating it by an offset
@@ -308,6 +327,25 @@ function rotateDict(accessCode, playerChosenWord, members, offset){
 
     mongo.updateDocument(accessCode, `playerToWord.${receivingMember}`, currentWord, 'group');
   }
+}
+
+function shuffle(array) {
+  var currentIndex = array.length, temporaryValue, randomIndex;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
 }
 
 module.exports = router;
