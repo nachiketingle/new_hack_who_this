@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:new_hack_who_this/Models/User.dart';
+import 'package:new_hack_who_this/Network/GroupServices.dart';
 
 class JoinGroup extends StatefulWidget {
-
   _JoinGroupState createState() => _JoinGroupState();
 }
 
@@ -12,30 +12,53 @@ class _JoinGroupState extends State<JoinGroup> {
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
 
   void _createGroup() async {
-    if(!_isValid()) {
+    if (!_isValid()) {
       _displaySnackBar("Please enter all valid fields");
       return;
     }
 
-    User user = User(
-        name: _usernameController.text,
-        groupName: 'random group name',
-        accessCode: _accessCodeController.text,
-    );
-    User.currUser = user;
-    Navigator.of(context).pushNamed('/lobby', arguments: user);
+    // get info from form
+    String code = _accessCodeController.text;
+    String name = _usernameController.text.trim();
+
+    // send network request
+    GroupServices.joinGroup(code, name).then((value) {
+      // if had an error
+      if (value.containsKey('error')) {
+        Scaffold.of(context).showSnackBar(SnackBar(
+          content: Text(value['error']),
+        ));
+      } 
+      // if joined successfully
+      else {
+        List<dynamic> _temp = value['members'];
+        List<User> allUsers = List();
+        for (String username in _temp) {
+          User user = User(
+              name: username,
+              groupName: value['groupName'],
+              accessCode: code,
+              isHost: false);
+          allUsers.add(user);
+          if (username == name) {
+            User.currUser = user;
+          }
+        }
+
+        Navigator.pushNamed(context, "/lobby", arguments: allUsers);
+      }
+    });
   }
 
   bool _isValid() {
-    return _accessCodeController.text.length > 0 && _usernameController.text.length > 0;
+    return _accessCodeController.text.length > 0 &&
+        _usernameController.text.length > 0;
   }
 
   void _displaySnackBar(String text) {
-    _scaffoldKey.currentState.showSnackBar(
-        SnackBar(
-          content: Text(text),
-        )
-    );
+    _scaffoldKey.currentState.showSnackBar(SnackBar(
+      content: Text(text),
+    ));
   }
 
   @override
@@ -54,15 +77,11 @@ class _JoinGroupState extends State<JoinGroup> {
               children: <Widget>[
                 TextField(
                   controller: _accessCodeController,
-                  decoration: InputDecoration(
-                      hintText: "Group Name"
-                  ),
+                  decoration: InputDecoration(hintText: "Group Name"),
                 ),
                 TextField(
                   controller: _usernameController,
-                  decoration: InputDecoration(
-                      hintText: "Your Name"
-                  ),
+                  decoration: InputDecoration(hintText: "Your Name"),
                 ),
               ],
             ),
