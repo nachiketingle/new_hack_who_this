@@ -5,10 +5,19 @@ import 'package:carousel_slider/carousel_slider.dart';
 import '../Helpers/Constants.dart';
 
 class JoinGroup extends StatefulWidget {
-  _JoinGroupState createState() => _JoinGroupState();
+  final VoidCallback onJoin;
+  final VoidCallback onEdit;
+  final VoidCallback onJoinFail;
+  JoinGroup(
+      {Key key,
+      @required this.onJoin,
+      @required this.onJoinFail,
+      @required this.onEdit})
+      : super(key: key);
+  JoinGroupState createState() => JoinGroupState();
 }
 
-class _JoinGroupState extends State<JoinGroup> {
+class JoinGroupState extends State<JoinGroup> {
   TextEditingController _accessCodeController = TextEditingController();
   TextEditingController _usernameController = TextEditingController();
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
@@ -16,11 +25,21 @@ class _JoinGroupState extends State<JoinGroup> {
   FocusNode _accessCodeFocus = FocusNode();
   FocusNode _nameFocus = FocusNode();
 
+  void reset() {
+    buttonCarouselController.animateToPage(0,
+        duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
+  }
+
   void _joinGroup() async {
     if (!_isValid()) {
       _displaySnackBar("Please enter all valid fields");
       return;
     }
+
+    // signal parent creating group
+    widget.onJoin();
+
+    await Future.delayed(Duration(seconds: 1));
 
     // get info from form
     String code = _accessCodeController.text;
@@ -30,6 +49,7 @@ class _JoinGroupState extends State<JoinGroup> {
     GroupServices.joinGroup(code, name).then((value) {
       // if had an error
       if (value.containsKey('error')) {
+        widget.onJoinFail();
         Scaffold.of(context).showSnackBar(SnackBar(
           content: Text(value['error']),
         ));
@@ -160,7 +180,13 @@ class _JoinGroupState extends State<JoinGroup> {
                   MediaQuery.of(context).size.width,
               enableInfiniteScroll: false,
               autoPlay: false,
-              viewportFraction: 1),
+              viewportFraction: 1,
+              onPageChanged: (int newPage, CarouselPageChangedReason reason) {
+                // if intenionally swiped
+                if (reason == CarouselPageChangedReason.manual) {
+                  widget.onEdit();
+                }
+              }),
           itemCount: 3,
           itemBuilder: _formBuilder),
       decoration: BoxDecoration(

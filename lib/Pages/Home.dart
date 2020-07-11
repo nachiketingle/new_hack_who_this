@@ -4,6 +4,7 @@ import '../Helpers/Constants.dart';
 import './JoinGroup.dart';
 import './CreateGroup.dart';
 import 'package:keyboard_visibility/keyboard_visibility.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
@@ -11,8 +12,11 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   bool _keyboardVisible = false;
+  bool _loading = false;
   Widget _joinGroupWidget;
   Widget _createGroupWidget;
+  GlobalKey<JoinGroupState> joinKey = GlobalKey();
+  GlobalKey<CreateGroupState> createKey = GlobalKey();
 
   @override
   void initState() {
@@ -24,8 +28,33 @@ class _HomeState extends State<Home> {
         });
       },
     );
-    _joinGroupWidget = JoinGroup();
-    _createGroupWidget = CreateGroup();
+    _joinGroupWidget = JoinGroup(
+      key: joinKey,
+      onEdit: () {
+        createKey.currentState.reset();
+      },
+      onJoin: () {
+        setState(() {
+          _loading = true;
+        });
+      },
+      onJoinFail: () {
+        setState(() {
+          _loading = false;
+        });
+      },
+    );
+    _createGroupWidget = CreateGroup(
+      key: createKey,
+      onEdit: () {
+        joinKey.currentState.reset();
+      },
+      onCreate: () {
+        setState(() {
+          _loading = true;
+        });
+      },
+    );
   }
 
   @override
@@ -81,14 +110,20 @@ class _HomeState extends State<Home> {
                           height: MediaQuery.of(context).size.height * .15),
                     ],
                   ),
-                  Column(
-                    children: <Widget>[
-                      _createGroupWidget,
-                      SizedBox(
-                          height: MediaQuery.of(context).size.height * .02),
-                      _joinGroupWidget
-                    ],
-                  )
+                  if (!_loading)
+                    Column(
+                      children: <Widget>[
+                        _createGroupWidget,
+                        SizedBox(
+                            height: MediaQuery.of(context).size.height * .02),
+                        _joinGroupWidget
+                      ],
+                    ),
+                  if (_loading)
+                    Transform.scale(
+                      child: SpinKitDoubleBounce(color: Constants.primaryColor),
+                      scale: 2.5,
+                    )
                 ],
               ),
             )

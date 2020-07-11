@@ -5,10 +5,14 @@ import 'package:carousel_slider/carousel_slider.dart';
 import '../Helpers/Constants.dart';
 
 class CreateGroup extends StatefulWidget {
-  _CreateGroupState createState() => _CreateGroupState();
+  final VoidCallback onCreate;
+  final VoidCallback onEdit;
+  CreateGroup({Key key, @required this.onCreate, @required this.onEdit})
+      : super(key: key);
+  CreateGroupState createState() => CreateGroupState();
 }
 
-class _CreateGroupState extends State<CreateGroup> {
+class CreateGroupState extends State<CreateGroup> {
   TextEditingController _groupNameController = TextEditingController();
   TextEditingController _usernameController = TextEditingController();
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
@@ -16,11 +20,21 @@ class _CreateGroupState extends State<CreateGroup> {
   FocusNode _groupNameFocus = FocusNode();
   FocusNode _nameFocus = FocusNode();
 
-  void _createGroup() async {
+  void reset() {
+    buttonCarouselController.animateToPage(0,
+        duration: Duration(milliseconds: 300), curve: Curves.easeInOut);
+  }
+
+  void _createGroup(BuildContext context) async {
     if (!_isValid()) {
       _displaySnackBar("Please enter all valid fields");
       return;
     }
+
+    // signal parent creating group
+    widget.onCreate();
+
+    await Future.delayed(Duration(seconds: 1));
 
     GroupServices.createGroup(
             _groupNameController.text.trim(), _usernameController.text.trim())
@@ -119,7 +133,7 @@ class _CreateGroupState extends State<CreateGroup> {
             focusNode: _nameFocus,
             controller: _usernameController,
             onSubmitted: (s) {
-              _createGroup();
+              _createGroup(context);
             },
             decoration: new InputDecoration(
                 isDense: true,
@@ -144,7 +158,13 @@ class _CreateGroupState extends State<CreateGroup> {
                   MediaQuery.of(context).size.width,
               enableInfiniteScroll: false,
               autoPlay: false,
-              viewportFraction: 1),
+              viewportFraction: 1,
+              onPageChanged: (int newPage, CarouselPageChangedReason reason) {
+                // if intenionally swiped
+                if (reason == CarouselPageChangedReason.manual) {
+                  widget.onEdit();
+                }
+              }),
           itemCount: 3,
           itemBuilder: _formBuilder),
       decoration: BoxDecoration(
