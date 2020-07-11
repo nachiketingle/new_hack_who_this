@@ -48,7 +48,10 @@ router.put('/create-group', async (req, res) => {
     'accessCode': accessCode,
     'groupName': groupName,
     'joinable': true,
-    'members': [name]
+    'members': [name],
+    'playerToWord': {},
+    'wordSketches': {},
+    'wordGuesses': {}
   };
 
   // keep generating accessCodes until a valid one is generated
@@ -86,16 +89,19 @@ router.put('/join-group', async (req, res) => {
     if (doc['joinable']) {
       // if name is valid
       if (!doc['members'].includes(name)) {
-        // add members
+        // // add members
+        // doc['members'].push(name);
+        // //  update document
+        // mongo.updateDocument(accessCode, 'members', doc['members'], 'group');
+        mongo.pushUpdate(accessCode, 'members', name, 'group');
         doc['members'].push(name);
-        //  update document
-        mongo.updateDocument(accessCode, 'members', doc['members'], 'group');
+
         // // Send pusher triggerEvent
         pusher.triggerEvent(accessCode, 'onGuestJoin', doc['members']);
         res.status(200).json({
           'message': 'Success',
           'groupName': doc['groupName'],
-          'members': doc['members']
+          'members': doc['members'],
         });
       } else {
         res.status(409).json({
@@ -147,23 +153,45 @@ router.put('/start-game', async (req, res, next) => {
   res.status(200).json({availableWords: availableWords});
 });
 
-router.put('/submit-word', (req, res, next) => {
-  res.status(200).json({
-    'selectedWords': {
-      'Baron': 'Apples',
-      'Bacho' : 'Dog',
-      'Bevin' : 'GDragon'
-    }
-  })
+router.put('/submit-word', async (req, res, next) => {
+  // Parse body
+  let accessCode = req.body['accessCode'];
+  let name = req.body['name'];
+  let word = req.body['word'];
+
+  await mongo.updateDocument(accessCode, `playerToWord.${name}`, word, 'group');
+  await mongo.updateDocument(accessCode, `wordSketches.${word}`, [], 'group');
+
+  let doc = await mongo.findDocument(accessCode, 'group');
+  res.status(200).json(doc['playerToWord']);
+
 });
 
-router.put('/submit-sketch', (req, res, next) => {
+router.put('/submit-sketch', async (req, res, next) => {
+  // Parse body
+  let accessCode = req.body['accessCode'];
+  let name = req.body['name'];
+  let sketch = req.body['sketch'];
+
+  let doc = await mongo.findDocument(accessCode, 'group');
+  let word = doc['playerToWord'][name];
+
+  mongo.pushUpdate(accessCode, `wordSketches.${word}`, sketch, 'group');
+
   res.status(200).json({
     'message': 'Success'
   })
+
 });
 
-router.put('/submit-guess', (req, res, next) => {
+router.put('/submit-guess', async (req, res, next) => {
+  // Parse body
+  let accessCode = req.body['accessCode'];
+  let name = req.body['name'];
+  let guess = req.body['guess'];
+
+  await mongo.updateDocument(accessCode, `wordGuesses.${name}`, guess, 'group');
+
   res.status(200).json({
     'message': 'Success'
   })
