@@ -15,6 +15,7 @@ class _CreateSketchState extends State<CreateSketch> {
 
   Future<void> _submitSketch() async {
     String base64String = await _sketchCanvasKey.currentState.getImageData();
+    
     Navigator.pushNamed(context, '/submitSketch', arguments: Sketch(base64String));
   }
 
