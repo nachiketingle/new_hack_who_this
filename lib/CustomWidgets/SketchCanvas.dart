@@ -1,34 +1,63 @@
 import 'package:flutter/material.dart';
 import 'package:new_hack_who_this/Helpers/Constants.dart';
+import 'dart:ui' as ui;
+import 'dart:typed_data';
+import 'dart:convert';
 
 class SketchCanvas extends StatefulWidget {
-  SketchCanvas({Key key}) :
-        super(key: key);
+  SketchCanvas({Key key}) : super(key: key);
 
   _SketchCanvasState createState() => _SketchCanvasState();
-
 }
 
 class _SketchCanvasState extends State<SketchCanvas> {
-
   final List<Line> _lineList = List();
   Line _line;
   List<Offset> points;
   static Color chosenColor;
   static int thickness;
+  static int width;
+  static int height;
   int currLine = 0;
 
   @override
+  void initState() {
+    width = -1;
+    height = -1;
+    super.initState();
+  }
+
+  void getImageData() async {
+    ByteData bd = await SketchPainter(_lineList).getImageData();
+    print(bd.buffer.lengthInBytes);
+    String s = base64.encode(bd.buffer.asInt64List());
+    print(s);
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (width == -1) {
+      width = (MediaQuery.of(context).size.width * 0.8).round();
+    }
+    if (height == -1) {
+      height = (MediaQuery.of(context).size.height * 0.6).round();
+    }
+
+    getImageData();
+
+    width = (MediaQuery.of(context).size.width * 0.8).round();
+    height = (MediaQuery.of(context).size.height * 0.6).round();
 
     return GestureDetector(
       onPanStart: (details) {
         setState(() {
           points = List();
-          _line = Line(points, Paint()
-            ..color = chosenColor
-            ..strokeWidth = 3
-            ..isAntiAlias = true);
+          _line = Line(
+              points,
+              Paint()
+                ..color = chosenColor
+                ..strokeWidth = 3
+                ..isAntiAlias = true);
           _lineList.add(_line);
         });
       },
@@ -46,32 +75,44 @@ class _SketchCanvasState extends State<SketchCanvas> {
       child: CustomPaint(
         foregroundPainter: SketchPainter(_lineList),
         child: Container(
-          height: MediaQuery.of(context).size.height * 0.6,
-          width: MediaQuery.of(context).size.width * 0.8,
+          height: height * 1.0,
+          width: width * 1.0,
           color: Colors.green[50],
         ),
       ),
     );
   }
-
 }
 
 class SketchPainter extends CustomPainter {
-
   List<Line> lines;
-  SketchPainter(this.lines): super();
+  ui.PictureRecorder recorder = new ui.PictureRecorder();
+  SketchPainter(this.lines) : super();
+  static Canvas activeCanvas;
+
+  Future<ByteData> getImageData() async {
+    int width = _SketchCanvasState.width;
+    int height = _SketchCanvasState.height;
+    final ui.PictureRecorder recorder = ui.PictureRecorder();
+    this.paint(Canvas(recorder), new Size(width * 1.0, height * 1.0));
+
+    ui.Picture picture = recorder.endRecording();
+    ui.Image img = await picture.toImage(width, height);
+    ByteData data = await img.toByteData(format: ui.ImageByteFormat.rawUnmodified);
+    return data;
+  }
 
   @override
   void paint(Canvas canvas, Size size) {
     Paint paint;
-    for(Line line in lines) {
+    for (Line line in lines) {
       List<Offset> points = line.points;
       paint = line.paint;
-      for(int i = 0; i < points.length - 1; i++) {
-        if(!size.contains(points[i]) || !size.contains(points[i+1]))
+      for (int i = 0; i < points.length - 1; i++) {
+        if (!size.contains(points[i]) || !size.contains(points[i + 1]))
           continue;
         //canvas.drawPoints(PointMode.points, [offsets[i]], paint);
-        canvas.drawLine(points[i], points[i+1], paint);
+        canvas.drawLine(points[i], points[i + 1], paint);
       }
     }
   }
@@ -83,15 +124,12 @@ class SketchPainter extends CustomPainter {
 }
 
 class ColorPalette extends StatefulWidget {
-
   ColorPalette();
 
   _ColorPaletteState createState() => _ColorPaletteState();
-
 }
 
 class _ColorPaletteState extends State<ColorPalette> {
-
   Color chosenColor;
   int setThickness;
 
@@ -108,19 +146,17 @@ class _ColorPaletteState extends State<ColorPalette> {
   List<Widget> _colorButtons() {
     List<Widget> buttons = List();
 
-    for(Color color in _list) {
-      buttons.add(
-        Flexible(
-          flex: 1,
-          child: RaisedButton(
-            shape: CircleBorder(),
-            color: color,
-            onPressed: () {
-              updateColor(color);
-            },
-          ),
-        )
-      );
+    for (Color color in _list) {
+      buttons.add(Flexible(
+        flex: 1,
+        child: RaisedButton(
+          shape: CircleBorder(),
+          color: color,
+          onPressed: () {
+            updateColor(color);
+          },
+        ),
+      ));
     }
 
     return buttons;
@@ -165,7 +201,6 @@ class _ColorPaletteState extends State<ColorPalette> {
       ),
     );
   }
-
 }
 
 class Line {
@@ -173,5 +208,4 @@ class Line {
   Paint paint = Paint();
 
   Line(this.points, this.paint);
-
 }
