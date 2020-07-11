@@ -19,15 +19,13 @@ class _LobbyState extends State<Lobby> {
   }
 
   void _loadUsers() async {
-    Timer(Duration(milliseconds: 500),() => null);
     int origLength = _userList.length;
-    _userList.add(_user);
-    _userList.add(User.min(name: "Baron"));
-    _userList.add(User.min(name: "Bevin"));
-    _userList.add(User.min(name: "Bacho"));
+    // get all users from previous page
+    _userList = ModalRoute.of(context).settings.arguments;
 
     await Future.delayed(Duration(seconds: 1));
 
+    // animate each user entrance
     for(int i = origLength; i < _userList.length; i++) {
       _animatedListKey.currentState.insertItem(i, duration: Duration(milliseconds: 500));
     }
@@ -52,7 +50,6 @@ class _LobbyState extends State<Lobby> {
   @override
   void initState() {
     super.initState();
-    //_loadUsers();
   }
 
   @override
@@ -60,7 +57,6 @@ class _LobbyState extends State<Lobby> {
 
     if(!_loaded) {
       _loaded = true;
-      _user = ModalRoute.of(context).settings.arguments;
       _loadUsers();
     }
 
