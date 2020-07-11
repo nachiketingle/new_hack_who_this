@@ -107,7 +107,7 @@ router.put('/join-group', async (req, res) => {
         await mongo.pushUpdate(accessCode, 'members', name, 'group');
         // get updated document
         doc = await mongo.findDocument(accessCode, 'group');
-        
+
         // Send pusher triggerEvent
         pusher.triggerEvent(accessCode, 'onGuestJoin', doc['members']);
         res.status(200).json({
@@ -160,7 +160,7 @@ router.put('/start-game', async (req, res, next) => {
     availableWords[doc['members'][Math.floor(i/NUM_CHOICES)]].push(word);
   }
   // Broadcast categories to channel
-  pusher.triggerEvent(accessCode, 'onGameStart', {availableWords: availableWords});
+  pusher.triggerEvent(accessCode, 'onGameStart', availableWords);
   // Send response
   res.status(200).json({availableWords: availableWords});
 });
