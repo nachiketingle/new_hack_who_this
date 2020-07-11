@@ -5,6 +5,8 @@ import 'package:new_hack_who_this/CustomWidgets/Timer.dart';
 import 'package:new_hack_who_this/Helpers/Constants.dart';
 import 'package:new_hack_who_this/Models/User.dart';
 import 'package:new_hack_who_this/Network/SketchServices.dart';
+import 'package:new_hack_who_this/Pages/CreateSketch.dart';
+import '../Animations/Transitions.dart';
 
 class PreviousSketch extends StatefulWidget {
   _PreviousSketchState createState() => _PreviousSketchState();
@@ -48,7 +50,8 @@ class _PreviousSketchState extends State<PreviousSketch> {
             IconButton(
               icon: Icon(Icons.navigate_next),
               onPressed: () {
-                Navigator.of(context).pushNamed('/createSketch');
+                //Navigator.of(context).pushNamed('/createSketch');
+                Navigator.of(context).push(CustomFadeTransition.createRoute(CreateSketch()));
               },
             )
           ],
