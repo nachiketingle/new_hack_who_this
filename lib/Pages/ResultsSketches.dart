@@ -22,7 +22,7 @@ class _ResultsSketchesState extends State<ResultsSketches> {
     Map<String, dynamic> result =
         await ResultsServices.resultsDetails(User.currUser.accessCode, word);
     // get the list of details
-    List<Map<String, dynamic>> sketchDetails = result["details"];
+    List<dynamic> sketchDetails = result["details"];
     for(Map<String, dynamic> sketchDetail in sketchDetails) {
       // map the drawer to the sketch image
       String drawer = sketchDetail["drawer"];
