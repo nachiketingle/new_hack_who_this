@@ -2,10 +2,16 @@ import 'package:flutter/material.dart';
 import 'Helpers/Constants.dart';
 import 'Pages/ImportAllPages.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter/services.dart';
 
 void main() async {
   await DotEnv().load('.env');
-  runApp(MyApp());
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]).then((_) {
+    runApp(MyApp());
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -17,6 +23,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Constants.primarySwatch,
         visualDensity: VisualDensity.adaptivePlatformDensity,
+        fontFamily: 'Montserrat'
       ),
       routes: {
         '/': (context) => Home(),

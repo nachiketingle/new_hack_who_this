@@ -98,7 +98,7 @@ class _LobbyState extends State<Lobby> {
           child: Column(
         children: <Widget>[
           Text("Group Name: ${_user.groupName}"),
-          Text("Group Name: ${_user.accessCode}"),
+          Text("Access Code: ${_user.accessCode}"),
           Expanded(
             child: AnimatedList(
               key: _animatedListKey,
