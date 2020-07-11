@@ -24,7 +24,6 @@ class _JoinGroupState extends State<JoinGroup> {
     );
     User.currUser = user;
     Navigator.of(context).pushNamed('/lobby', arguments: user);
-
   }
 
   bool _isValid() {
