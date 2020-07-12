@@ -318,7 +318,7 @@ router.get('/results', async (req, res, next) => {
   let dict = {};
   Object.keys(doc['playerToWord']).forEach(player => {
     let word = doc['playerToWord'][player];
-    let guess = doc['wordGuesses'][player];
+    let guess = doc['wordGuesses'][word];
     dict[word] = (word == guess);
   });
 
