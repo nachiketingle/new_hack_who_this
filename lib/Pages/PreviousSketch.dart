@@ -150,10 +150,10 @@ class _PreviousSketchState extends State<PreviousSketch> {
             callback: () {
               if (_isGuessing) {
                 Navigator.of(context)
-                    .push(CustomFadeTransition.createRoute(GuessWord()));
+                    .pushReplacement(CustomFadeTransition.createRoute(GuessWord()));
               } else {
                 Navigator.of(context)
-                    .push(CustomFadeTransition.createRoute(CreateSketch()));
+                    .pushReplacement(CustomFadeTransition.createRoute(CreateSketch()));
               }
             },
           ),
