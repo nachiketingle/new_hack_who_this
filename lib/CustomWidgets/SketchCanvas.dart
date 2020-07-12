@@ -121,7 +121,7 @@ class SketchCanvasState extends State<SketchCanvas> {
         child: Container(
           height: height * 1.0,
           width: width * 1.0,
-          color: Colors.green[50],
+          color: Colors.white,
         ),
       ),
     );
