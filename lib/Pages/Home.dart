@@ -22,7 +22,7 @@ class _HomeState extends State<Home> {
   GlobalKey<FormSliderState> joinKey = GlobalKey();
   GlobalKey<FormSliderState> createKey = GlobalKey();
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
-  double _bannerOpacity = .9;
+  double _bannerOpacity = .7;
 
   @override
   void initState() {

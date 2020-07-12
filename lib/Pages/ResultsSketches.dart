@@ -16,19 +16,20 @@ class _ResultsSketchesState extends State<ResultsSketches> {
 
   Future<Map<String, Image>> _getAllSketches(String word) async {
     // assign the word getting details for
-    wordGuessed = word;
     Map<String, Image> details = new Map<String, Image>();
     // do api call to get details
     Map<String, dynamic> result =
         await ResultsServices.resultsDetails(User.currUser.accessCode, word);
     // get the list of details
     List<dynamic> sketchDetails = result["details"];
+    wordGuessed = result["guess"];
     for (Map<String, dynamic> sketchDetail in sketchDetails) {
       // map the drawer to the sketch image
       String drawer = sketchDetail["drawer"];
       String sketch = sketchDetail["sketch"];
       details[drawer] = Sketch(sketch).image;
     }
+    print(details);
     return details;
   }
 
@@ -62,64 +63,64 @@ class _ResultsSketchesState extends State<ResultsSketches> {
                 if (snapshot.hasData) {
                   Map<String, Image> map = snapshot.data;
                   List<String> names = map.keys.toList();
-                  return ListView.builder(
-                      itemCount: names.length + 1,
-                      itemBuilder: (context, index) {
-                        if (index == 0) {
-                          return Column(children: [
-                            SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.height * .10),
-                            Center(
-                                child: Text(
-                              "Word Chosen: " + word,
-                              style: TextStyle(
-                                  fontSize: 25, color: Constants.textColor),
-                            )),
-                            SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.height * .05),
-                          ]);
-                        } else if (index == names.length + 1) {
-                          return Center(
-                              child: Text("Your drawings of " + wordGuessed));
-                        } else {
-                          return Container(
-                            height: MediaQuery.of(context).size.height * .5,
-                            child: Center(
-                              child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: <Widget>[
-                                  Text(
-                                    "Player " +
-                                        names[index - 1] +
-                                        "'s drawing:",
-                                    style: TextStyle(
-                                        color: Constants.textColor,
-                                        fontSize: 20),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  SizedBox(
-                                      height:
-                                          MediaQuery.of(context).size.height *
-                                              .01),
-                                  Expanded(
-                                      child: Container(
-                                    decoration:
-                                        BoxDecoration(color: Colors.white),
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.5,
-                                    height: MediaQuery.of(context).size.height *
-                                        0.5,
-                                    child: map[names[index - 1]],
-                                  ))
-                                ],
+                  return Column(children: [
+                    Column(children: [
+                      SizedBox(
+                          height: MediaQuery.of(context).size.height * .10),
+                      Center(
+                          child: Text(
+                        "Your drawings of " + word,
+                        style:
+                            TextStyle(fontSize: 25, color: Constants.textColor),
+                        textAlign: TextAlign.center,
+                      )),
+                      SizedBox(
+                          height: MediaQuery.of(context).size.height * .05),
+                    ]),
+                    Expanded(
+                      child: ListView.builder(
+                          shrinkWrap: true,
+                          physics: AlwaysScrollableScrollPhysics(),
+                          itemCount: names.length,
+                          itemBuilder: (context, index) {
+                            print(index);
+                            return Container(
+                              height: MediaQuery.of(context).size.height * .5,
+                              child: Center(
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: <Widget>[
+                                    Text(
+                                      "Player " + names[index] + "'s drawing:",
+                                      style: TextStyle(
+                                          color: Constants.textColor,
+                                          fontSize: 20),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    SizedBox(
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                .01),
+                                    Expanded(
+                                        child: Container(
+                                      decoration:
+                                          BoxDecoration(color: Colors.white),
+                                      width:
+                                          MediaQuery.of(context).size.width * 0.5,
+                                      height: MediaQuery.of(context).size.height *
+                                          0.5,
+                                      child: map[names[index]],
+                                    ))
+                                  ],
+                                ),
                               ),
-                            ),
-                          );
-                        }
-                      });
+                            );
+                          }),
+                    ),
+                        Center(
+                                child: Text("Your drawings of " + wordGuessed)
+                  ]);
                 } else {
                   return Center(
                       child: Transform.scale(

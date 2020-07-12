@@ -120,6 +120,7 @@ class _PreviousSketchState extends State<PreviousSketch> {
                         "You chose to draw: ",
                         style:
                             TextStyle(fontSize: 30, color: Constants.textColor),
+                        textAlign: TextAlign.center,
                       ),
                       SizedBox(
                           height: MediaQuery.of(context).size.height * .05),
