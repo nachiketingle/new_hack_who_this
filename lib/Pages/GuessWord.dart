@@ -4,6 +4,8 @@ import 'package:new_hack_who_this/Network/SketchServices.dart';
 import 'package:new_hack_who_this/Models/User.dart';
 import 'package:new_hack_who_this/Network/PusherWeb.dart';
 import 'dart:convert';
+import 'package:new_hack_who_this/Helpers/Constants.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import 'package:new_hack_who_this/Pages/ImportAllPages.dart';
 
@@ -48,7 +50,8 @@ class _GuessWordState extends State<GuessWord> {
       // game end event
       if (json['event'] == "onGameEnd") {
         //Navigator.of(context).pushNamed('/resultsWords');
-        Navigator.pushReplacement(context, CustomFadeTransition.createRoute(ResultsWords()));
+        Navigator.pushReplacement(
+            context, CustomFadeTransition.createRoute(ResultsWords()));
       }
     });
   }
@@ -64,68 +67,94 @@ class _GuessWordState extends State<GuessWord> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: Center(
+          body: Stack(children: <Widget>[
+        Opacity(
+            opacity: .6,
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topRight,
+                    colors: [Constants.primaryColor, Constants.secondaryColor]),
+              ),
+            )),
+        Center(
           child: !guessed
               ? FutureBuilder(
-              future: _getWords(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  List<String> words = snapshot.data;
-                  return Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: <Widget>[
-                        Container(
-                            height: MediaQuery.of(context).size.height * 0.15,
-                            child: Center(
-                                child: Text(
+                  future: _getWords(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      List<String> words = snapshot.data;
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: <Widget>[
+                            Container(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.15,
+                                child: Center(
+                                    child: Text(
                                   "What is this a picture of?",
-                                  style: TextStyle(fontSize: 20),
+                                  style: TextStyle(
+                                      fontSize: 20, color: Constants.textColor),
                                 ))),
-                        Expanded(
-                          child: ListView.builder(
-                            physics: AlwaysScrollableScrollPhysics(),
-                            shrinkWrap: true,
-                            itemCount: words.length,
-                            itemBuilder: (context, index) {
-                              return Card(
-                                child: InkWell(
-                                  child: Container(
-                                    height:
-                                    MediaQuery.of(context).size.height *
-                                        0.2,
-                                    child: Center(
-                                      child: Text(
-                                        words[index],
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 20),
+                            Expanded(
+                              child: ListView.builder(
+                                physics: AlwaysScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                itemCount: words.length,
+                                itemBuilder: (context, index) {
+                                  return Card(
+                                    child: InkWell(
+                                      child: Container(
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                0.2,
+                                        child: Center(
+                                          child: Text(
+                                            words[index],
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 20),
+                                          ),
+                                        ),
                                       ),
+                                      onTap: () {
+                                        _guessedWord(words[index]);
+                                      },
                                     ),
-                                  ),
-                                  onTap: () {
-                                    _guessedWord(words[index]);
-                                  },
-                                ),
-                              );
-                            },
-                          ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  );
-                } else {
-                  return CircularProgressIndicator();
-                }
-              })
+                      );
+                    } else {
+                      return CircularProgressIndicator();
+                    }
+                  })
               : Column(
-            children: <Widget>[
-              Text("Waiting on others..."),
-              CircularProgressIndicator()
-            ],
-          ),
+                  children: <Widget>[
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.15,
+                    ),
+                    Text(
+                      "Waiting on others...",
+                      style:
+                          TextStyle(color: Constants.textColor, fontSize: 30),
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.35,
+                    ),
+                    Transform.scale(
+                      child: SpinKitDoubleBounce(color: Constants.primaryColor),
+                      scale: 4,
+                    )
+                  ],
+                ),
         ),
-      ),
+      ])),
     );
   }
 }

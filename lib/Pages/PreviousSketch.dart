@@ -8,6 +8,7 @@ import 'package:new_hack_who_this/Network/SketchServices.dart';
 import 'package:new_hack_who_this/Pages/CreateSketch.dart';
 import 'package:new_hack_who_this/Pages/GuessWord.dart';
 import '../Animations/Transitions.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class PreviousSketch extends StatefulWidget {
   _PreviousSketchState createState() => _PreviousSketchState();
@@ -53,10 +54,7 @@ class _PreviousSketchState extends State<PreviousSketch> {
                 gradient: LinearGradient(
                     begin: Alignment.bottomCenter,
                     end: Alignment.topRight,
-                    colors: [
-                      Constants.primaryColor,
-                      Constants.secondaryColor
-                    ]),
+                    colors: [Constants.primaryColor, Constants.secondaryColor]),
               ),
             )),
         Container(
@@ -74,8 +72,7 @@ class _PreviousSketchState extends State<PreviousSketch> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
                             Container(
-                                margin:
-                                    EdgeInsets.symmetric(horizontal: 20.0),
+                                margin: EdgeInsets.symmetric(horizontal: 20.0),
                                 child: RichText(
                                   text: TextSpan(
                                     children: [
@@ -83,12 +80,9 @@ class _PreviousSketchState extends State<PreviousSketch> {
                                           text:
                                               "Remember this image! You'll need to "),
                                       TextSpan(
-                                          text: _isGuessing
-                                              ? "guess"
-                                              : "draw",
+                                          text: _isGuessing ? "guess" : "draw",
                                           style: TextStyle(
-                                              color:
-                                                  Constants.primaryColor)),
+                                              color: Constants.primaryColor)),
                                       TextSpan(text: " it!"),
                                     ],
                                     style: TextStyle(
@@ -99,33 +93,33 @@ class _PreviousSketchState extends State<PreviousSketch> {
                                   textAlign: TextAlign.center,
                                 )),
                             SizedBox(
-                                height: MediaQuery.of(context).size.height *
-                                    .05),
+                                height:
+                                    MediaQuery.of(context).size.height * .05),
                             Container(
-                              width:
-                                  MediaQuery.of(context).size.width * 0.6,
-                              height:
-                                  MediaQuery.of(context).size.height * 0.6,
-                              child:
-                                  Image.memory(bytes, fit: BoxFit.contain),
-                              decoration:
-                                  BoxDecoration(color: Colors.white),
+                              width: MediaQuery.of(context).size.width * 0.6,
+                              height: MediaQuery.of(context).size.height * 0.6,
+                              child: Image.memory(bytes, fit: BoxFit.contain),
+                              decoration: BoxDecoration(color: Colors.white),
                             ),
                           ],
                         );
                       } else {
-                        return Center(child: CircularProgressIndicator());
+                        return Center(
+                            child: Transform.scale(
+                          child: SpinKitDoubleBounce(
+                              color: Constants.primaryColor),
+                          scale: 2.5,
+                        ));
                       }
                     },
                   )
                 : Column(
                     children: <Widget>[
-                      SizedBox(
-                          height: MediaQuery.of(context).size.height * .1),
+                      SizedBox(height: MediaQuery.of(context).size.height * .1),
                       Text(
                         "You chose to draw: ",
-                        style: TextStyle(
-                            fontSize: 30, color: Constants.textColor),
+                        style:
+                            TextStyle(fontSize: 30, color: Constants.textColor),
                       ),
                       SizedBox(
                           height: MediaQuery.of(context).size.height * .05),
@@ -149,11 +143,11 @@ class _PreviousSketchState extends State<PreviousSketch> {
             duration: Constants.viewSketchTimer,
             callback: () {
               if (_isGuessing) {
-                Navigator.of(context)
-                    .pushReplacement(CustomFadeTransition.createRoute(GuessWord()));
+                Navigator.of(context).pushReplacement(
+                    CustomFadeTransition.createRoute(GuessWord()));
               } else {
-                Navigator.of(context)
-                    .pushReplacement(CustomFadeTransition.createRoute(CreateSketch()));
+                Navigator.of(context).pushReplacement(
+                    CustomFadeTransition.createRoute(CreateSketch()));
               }
             },
           ),
