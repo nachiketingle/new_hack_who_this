@@ -240,13 +240,14 @@ router.put('/submit-sketch', async (req, res, next) => {
     let dict = {};
     dict['roundNumber'] = round;
     if(round == doc['members'].length -1){
-      dict['isGuessing'] = false;
+      dict['isGuessing'] = true;
     }
     else{
-      dict['isGuessing'] = true;
+      dict['isGuessing'] = false;
     }
     dict['playerToWord'] = doc['playerToWord'];
     pusher.triggerEvent(accessCode, 'onRoundStart', dict);
+
   }
 
   res.status(200).json({
@@ -271,25 +272,85 @@ router.put('/submit-guess', async (req, res, next) => {
   let submittedCount = doc['submittedMembers'].length;
   if (submittedCount >= doc['members'].length){
     // Send a pusher notification to trigger game end
-    await mongo.updateDocument(accessCode, `submittedMembers`, [], 'group');
-
-    let dict = {};
-    Object.keys(doc['playerToWord']).forEach( player => {
-      let word = doc['playerToWord'][player];
-      // player is guessing word
-      dict[word] = {sketches: doc['wordSketches']};
-      dict[word]['guess'] = doc['wordGuesses'][player];
-    });
-    pusher.triggerEvent(accessCode, 'onGameEnd', dict);
-
-    // Delete the document when we are done
-    mongo.deleteDocument(accessCode, 'group')
+    pusher.triggerEvent(accessCode, 'onGameEnd', {message: 'GG'});
   }
 
   res.status(200).json({
     'message': 'Success'
   })
 });
+
+router.get('/latest-sketch', async (req, res, next) => {
+  let accessCode = req.query.accessCode;
+  let word = req.query.word;
+
+  let doc = await mongo.findDocument(accessCode, 'group');
+  let sketches = doc['wordSketches'][word];
+  let latest_sketch = sketches[sketches.length - 1];
+  res.status(200).json({sketch: latest_sketch});
+});
+
+router.get('/prompt-guess', async (req, res, next) => {
+  let accessCode = req.query.accessCode;
+  let name = req.query.name;
+
+  let doc = await mongo.findDocument(accessCode, 'group');
+  let correctWord = doc['playerToWord'][name];
+  let wordChoices = [correctWord];
+
+  let words = [...wordBank];
+  for(let i = 0; i < 4; i++){
+    let rand = Math.floor(Math.random() * words.length);
+    let word = words[rand];
+    words.splice(rand,1);
+    wordChoices.push(word);
+  }
+
+  res.status(200).json({words: shuffle(wordChoices)});
+});
+
+router.get('/results', async (req, res, next) => {
+  let accessCode = req.query.accessCode;
+  let doc = await mongo.findDocument(accessCode, 'group');
+
+  let dict = {};
+  Object.keys(doc['playerToWord']).forEach( player => {
+    let word = doc['playerToWord'][player];
+    let guess = doc['wordGuesses'][player];
+    dict[word] = (word == guess);
+  });
+
+  res.status(200).json(dict);
+});
+
+router.get('/results-details', async (req, res, next) => {
+  let accessCode = req.query.accessCode;
+  let word = req.query.word;
+  let player = null;
+
+  let doc = await mongo.findDocument(accessCode, 'group');
+
+  // Get the player who chose the original word
+  Object.keys(doc['playerChosenWord']).forEach( currPlayer => {
+    if(doc['playerChosenWord'][currPlayer] == word){
+      player = currPlayer
+    }
+  });
+
+  // Get the index of player
+  let index = doc['members'].indexOf(player);
+
+  let list = [];
+  let offset = 0;
+  doc['wordSketches'][word].forEach( sketch => {
+    let drawer = doc['members'][(index + offset) % doc['members'].length]
+    list.push({drawer: drawer, sketch: sketch});
+    offset++;
+  });
+
+  res.status(200).json({details: list});
+});
+
 
 // ---------------------------HELPER FUNCTIONS----------------------------------
 
@@ -302,6 +363,25 @@ function rotateDict(accessCode, playerChosenWord, members, offset){
 
     mongo.updateDocument(accessCode, `playerToWord.${receivingMember}`, currentWord, 'group');
   }
+}
+
+function shuffle(array) {
+  var currentIndex = array.length, temporaryValue, randomIndex;
+
+  // While there remain elements to shuffle...
+  while (0 !== currentIndex) {
+
+    // Pick a remaining element...
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+
+    // And swap it with the current element.
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+
+  return array;
 }
 
 module.exports = router;
