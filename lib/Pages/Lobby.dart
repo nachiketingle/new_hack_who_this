@@ -124,10 +124,6 @@ class _LobbyState extends State<Lobby> {
   }
 
   void dispose() {
-    for (String event in events) {
-      pusher.unbindEvent(event);
-    }
-    pusher.unSubscribePusher(User.currUser.accessCode);
     super.dispose();
   }
 

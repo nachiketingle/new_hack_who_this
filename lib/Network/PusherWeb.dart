@@ -58,7 +58,7 @@ class PusherWeb {
     await subscribePusher(channelName);
     for (String eventName in eventNames) {
       bindEvent(eventName);
-      print("Channel Name: " + channelName + " Event Name: " + eventName);
+      print("Subscribing on Channel Name: " + channelName + " Event Name: " + eventName);
     }
   }
 }

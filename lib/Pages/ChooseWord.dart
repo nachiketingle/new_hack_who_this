@@ -19,6 +19,7 @@ class _ChooseWordState extends State<ChooseWord> {
   bool _loaded = false;
   bool _roundStarted = false;
   PusherWeb pusher;
+  List<String> events = ["onRoundStart"];
 
   void _submitWord() async {
     SketchServices.submitWord(
@@ -28,7 +29,6 @@ class _ChooseWordState extends State<ChooseWord> {
   // listen for events
   void _listenStream() async {
     // initialize pusher
-    List<String> events = ["onRoundStart"];
     await pusher.firePusher(User.currUser.accessCode, events);
     // add listener for events
     pusher.eventStream.listen((event) {
@@ -50,6 +50,10 @@ class _ChooseWordState extends State<ChooseWord> {
   void initState() {
     super.initState();
     pusher = PusherWeb();
+  }
+
+  void dispose() {
+    super.dispose();
   }
 
   @override
