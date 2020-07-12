@@ -122,6 +122,7 @@ class _LobbyState extends State<Lobby> {
   void initState() {
     super.initState();
     pusher = PusherWeb();
+    emojis.shuffle();
   }
 
   void dispose() {

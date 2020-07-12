@@ -198,7 +198,7 @@ class _HomeState extends State<Home> {
                         Image.asset('assets/logo.png', scale: 1),
                       if (!_keyboardVisible)
                         Text(
-                          'Connect with your friends!',
+                          'Draw your friends together!',
                           textAlign: TextAlign.center,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
