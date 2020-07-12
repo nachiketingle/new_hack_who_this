@@ -13,7 +13,7 @@ const NUM_CHOICES = 3;
 const HOURS = 2;
 
 // -----------------------------TESTING ENDPOINTS-------------------------------
-router.get('/', function(req, res, next) {
+router.get('/', function (req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
@@ -44,7 +44,7 @@ router.put('/create-group', async (req, res) => {
   let name = req.body['name'];
 
   // If body does not have 'groupName' and 'name', return an error and exit
-  if(!(groupName && name)){
+  if (!(groupName && name)) {
     res.status(400).json({
       'message': 'Bad Request'
     });
@@ -61,7 +61,7 @@ router.put('/create-group', async (req, res) => {
     'joinable': true,
     'members': [name],
     'playerToWord': {},
-    'playerChosenWord' : {},
+    'playerChosenWord': {},
     'wordSketches': {},
     'wordGuesses': {},
     'submittedMembers': []
@@ -77,9 +77,9 @@ router.put('/create-group', async (req, res) => {
       mongo.addDocument(group, 'group');
 
       // Let the doc self destruct if it still exists after a long delay
-      setTimeout(async function(){
+      setTimeout(async function () {
         let doc = await mongo.findDocument(accessCode, 'group');
-        if(doc){
+        if (doc) {
           mongo.deleteDocument(accessCode, 'group')
         }
       }, 1000 * 60 * 60 * HOURS); // Timeout after HOURS hours
@@ -155,21 +155,21 @@ router.put('/start-game', async (req, res, next) => {
 
   // Get numWords random words from words
   let availableWords = {};
-  doc['members'].forEach( (member) => {
+  doc['members'].forEach((member) => {
     availableWords[member] = [];
   });
 
   // Get NUM_CHOICES words for each member
-  for(let i = 0; i < numWords; i++){
+  for (let i = 0; i < numWords; i++) {
     let rand = Math.floor(Math.random() * words.length);
     let word = words[rand];
-    words.splice(rand,1);
-    availableWords[doc['members'][Math.floor(i/NUM_CHOICES)]].push(word);
+    words.splice(rand, 1);
+    availableWords[doc['members'][Math.floor(i / NUM_CHOICES)]].push(word);
   }
   // Broadcast categories to channel
   pusher.triggerEvent(accessCode, 'onGameStart', availableWords);
   // Send response
-  res.status(200).json({availableWords: availableWords});
+  res.status(200).json({ availableWords: availableWords });
 });
 
 router.put('/submit-word', async (req, res, next) => {
@@ -188,7 +188,7 @@ router.put('/submit-word', async (req, res, next) => {
 
   // If all words are submitted, send a onRoundStart notification
   let submittedCount = doc['submittedMembers'].length;
-  if (submittedCount >= doc['members'].length){
+  if (submittedCount >= doc['members'].length) {
     // Reset the submittedList
     await mongo.updateDocument(accessCode, `submittedMembers`, [], 'group');
 
@@ -222,7 +222,7 @@ router.put('/submit-sketch', async (req, res, next) => {
   let submittedCount = doc['submittedMembers'].length;
 
   // If all sketches submitted for current round, rotate assignment, start next round and send player to word mapping
-  if (submittedCount >= doc['members'].length){
+  if (submittedCount >= doc['members'].length) {
     // wait for images to be submitted
     await new Promise(r => setTimeout(r, 3000));
     // update the doc again
@@ -239,10 +239,10 @@ router.put('/submit-sketch', async (req, res, next) => {
     doc = await mongo.findDocument(accessCode, 'group');
     let dict = {};
     dict['roundNumber'] = round;
-    if(round == doc['members'].length -1){
+    if (round == doc['members'].length - 1) {
       dict['isGuessing'] = true;
     }
-    else{
+    else {
       dict['isGuessing'] = false;
     }
     dict['playerToWord'] = doc['playerToWord'];
@@ -270,9 +270,9 @@ router.put('/submit-guess', async (req, res, next) => {
 
   // If all guesses are submitted, send an onGameEnd notification
   let submittedCount = doc['submittedMembers'].length;
-  if (submittedCount >= doc['members'].length){
+  if (submittedCount >= doc['members'].length) {
     // Send a pusher notification to trigger game end
-    pusher.triggerEvent(accessCode, 'onGameEnd', {message: 'GG'});
+    pusher.triggerEvent(accessCode, 'onGameEnd', { message: 'GG' });
   }
 
   res.status(200).json({
@@ -287,7 +287,7 @@ router.get('/latest-sketch', async (req, res, next) => {
   let doc = await mongo.findDocument(accessCode, 'group');
   let sketches = doc['wordSketches'][word];
   let latest_sketch = sketches[sketches.length - 1];
-  res.status(200).json({sketch: latest_sketch});
+  res.status(200).json({ sketch: latest_sketch });
 });
 
 router.get('/prompt-guess', async (req, res, next) => {
@@ -299,14 +299,14 @@ router.get('/prompt-guess', async (req, res, next) => {
   let wordChoices = [correctWord];
 
   let words = [...wordBank];
-  for(let i = 0; i < 4; i++){
+  for (let i = 0; i < 4; i++) {
     let rand = Math.floor(Math.random() * words.length);
     let word = words[rand];
-    words.splice(rand,1);
+    words.splice(rand, 1);
     wordChoices.push(word);
   }
 
-  res.status(200).json({words: shuffle(wordChoices)});
+  res.status(200).json({ words: shuffle(wordChoices) });
 });
 
 router.get('/results', async (req, res, next) => {
@@ -314,7 +314,7 @@ router.get('/results', async (req, res, next) => {
   let doc = await mongo.findDocument(accessCode, 'group');
 
   let dict = {};
-  Object.keys(doc['playerToWord']).forEach( player => {
+  Object.keys(doc['playerToWord']).forEach(player => {
     let word = doc['playerToWord'][player];
     let guess = doc['wordGuesses'][player];
     dict[word] = (word == guess);
@@ -331,8 +331,8 @@ router.get('/results-details', async (req, res, next) => {
   let doc = await mongo.findDocument(accessCode, 'group');
 
   // Get the player who chose the original word
-  Object.keys(doc['playerChosenWord']).forEach( currPlayer => {
-    if(doc['playerChosenWord'][currPlayer] == word){
+  Object.keys(doc['playerChosenWord']).forEach(currPlayer => {
+    if (doc['playerChosenWord'][currPlayer] == word) {
       player = currPlayer
     }
   });
@@ -342,21 +342,21 @@ router.get('/results-details', async (req, res, next) => {
 
   let list = [];
   let offset = 0;
-  doc['wordSketches'][word].forEach( sketch => {
+  doc['wordSketches'][word].forEach(sketch => {
     let drawer = doc['members'][(index + offset) % doc['members'].length]
-    list.push({drawer: drawer, sketch: sketch});
+    list.push({ drawer: drawer, sketch: sketch });
     offset++;
   });
 
-  res.status(200).json({details: list});
+  res.status(200).json({ details: list, guess: doc['wordGuesses'][word] });
 });
 
 
 // ---------------------------HELPER FUNCTIONS----------------------------------
 
 // Mutates a dictionary by rotating it by an offset
-function rotateDict(accessCode, playerChosenWord, members, offset){
-  for(let i = 0; i < members.length; i++){
+function rotateDict(accessCode, playerChosenWord, members, offset) {
+  for (let i = 0; i < members.length; i++) {
     // receivingMember receives currentWord
     let currentWord = playerChosenWord[members[i]];
     let receivingMember = members[(i + offset) % members.length];
