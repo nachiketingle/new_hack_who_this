@@ -223,6 +223,10 @@ router.put('/submit-sketch', async (req, res, next) => {
 
   // If all sketches submitted for current round, rotate assignment, start next round and send player to word mapping
   if (submittedCount >= doc['members'].length){
+    // wait for images to be submitted
+    await new Promise(r => setTimeout(r, 3000));
+    // update the doc again
+    doc = await mongo.findDocument(accessCode, 'group');
     // Get the round number from number of submitted sketches
     let word = Object.keys(doc['wordSketches'])[0];
     let round = doc['wordSketches'][word].length;
