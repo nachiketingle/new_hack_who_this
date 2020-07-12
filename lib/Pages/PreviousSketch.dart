@@ -104,12 +104,15 @@ class _PreviousSketchState extends State<PreviousSketch> {
                           ],
                         );
                       } else {
-                        return Center(
-                            child: Transform.scale(
-                          child: SpinKitDoubleBounce(
-                              color: Constants.primaryColor),
-                          scale: 2.5,
-                        ));
+                        return Container(
+                            height: MediaQuery.of(context).size.height,
+                            width: double.infinity,
+                            child: Center(
+                                child: Transform.scale(
+                              child: SpinKitDoubleBounce(
+                                  color: Constants.primaryColor),
+                              scale: 2.5,
+                            )));
                       }
                     },
                   )
