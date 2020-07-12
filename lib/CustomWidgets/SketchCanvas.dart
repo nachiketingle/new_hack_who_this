@@ -244,7 +244,7 @@ class _ColorPaletteState extends State<ColorPalette> {
     return Column(
       children: <Widget>[
         Card(
-          color: chosenColor,
+          color: chosenColor.withOpacity(.5),
           child: Container(
               height: MediaQuery.of(context).size.height * 0.075,
               width: MediaQuery.of(context).size.width * 0.9,

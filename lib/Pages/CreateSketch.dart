@@ -9,32 +9,42 @@ import 'package:new_hack_who_this/Models/User.dart';
 import 'package:new_hack_who_this/Pages/ImportAllPages.dart';
 
 class CreateSketch extends StatefulWidget {
-
   _CreateSketchState createState() => _CreateSketchState();
 }
 
 class _CreateSketchState extends State<CreateSketch> {
-
   GlobalKey<SketchCanvasState> _sketchCanvasKey = GlobalKey();
 
   Future<void> _submitSketch() async {
     // get encoded string for sketch
     String base64String = await _sketchCanvasKey.currentState.getImageData();
     // submit the sketch to the server
-    SketchServices.submitSketch(User.currUser.accessCode, base64String, User.currUser.name);
+    SketchServices.submitSketch(
+        User.currUser.accessCode, base64String, User.currUser.name);
     // view sketch
     //Navigator.pushNamed(context, '/submitSketch', arguments: Sketch(base64String));
-    Navigator.pushReplacement(context, CustomFadeTransition.createRoute(SubmitSketch(), args: Sketch(base64String)));
+    Navigator.pushReplacement(
+        context,
+        CustomFadeTransition.createRoute(SubmitSketch(),
+            args: Sketch(base64String)));
   }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
-          title: Text("CreateSketch"),
-        ),
-        body: Container(
+          body: Stack(children: <Widget>[
+        Opacity(
+            opacity: .6,
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topRight,
+                    colors: [Constants.primaryColor, Constants.secondaryColor]),
+              ),
+            )),
+        Container(
           height: double.infinity,
           width: double.infinity,
           child: Stack(
@@ -52,24 +62,24 @@ class _CreateSketchState extends State<CreateSketch> {
               ),
               Positioned(
                 top: 75,
-                child: SketchCanvas(key: _sketchCanvasKey,),
+                child: SketchCanvas(
+                  key: _sketchCanvasKey,
+                ),
               ),
               Positioned(
-                bottom: 10,
-                child: ColorPalette(
+                  bottom: 10,
+                  child: ColorPalette(
                     undo: () {
                       _sketchCanvasKey.currentState.undoLine();
                     },
-                  clear: () {
+                    clear: () {
                       _sketchCanvasKey.currentState.clearCanvas();
-                  },
-                )
-              )
+                    },
+                  ))
             ],
           ),
         ),
-      ),
+      ])),
     );
   }
 }
-

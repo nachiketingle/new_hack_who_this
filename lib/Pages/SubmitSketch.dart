@@ -7,6 +7,7 @@ import 'package:new_hack_who_this/Models/Sketch.dart';
 import 'package:new_hack_who_this/Models/User.dart';
 import 'package:new_hack_who_this/Network/PusherWeb.dart';
 import 'package:new_hack_who_this/Pages/ImportAllPages.dart';
+import 'package:new_hack_who_this/Helpers/Constants.dart';
 
 class SubmitSketch extends StatefulWidget {
   _SubmitSketchState createState() => _SubmitSketchState();
@@ -33,7 +34,10 @@ class _SubmitSketchState extends State<SubmitSketch> {
         // wait a little to see own drawing
         await Future.delayed(Duration(seconds: 3));
         //Navigator.pushNamed(context, '/previousSketch', arguments: json['message']);
-        Navigator.pushReplacement(context, CustomFadeTransition.createRoute(PreviousSketch(), args: json['message']));
+        Navigator.pushReplacement(
+            context,
+            CustomFadeTransition.createRoute(PreviousSketch(),
+                args: json['message']));
       }
     });
   }
@@ -54,23 +58,37 @@ class _SubmitSketchState extends State<SubmitSketch> {
 
     return SafeArea(
       child: Scaffold(
-        body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                Text(
-                  "TIME UP!\nThis is what you drew.",
-                  style: TextStyle(fontSize: 20),
-                  textAlign: TextAlign.center,
-                ),
-                _sketch.image,
-                Text(
-                  "Waiting for next",
-                  style: TextStyle(color: Colors.grey),
-                )
-              ],
+          body: Stack(children: <Widget>[
+        Opacity(
+            opacity: .6,
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topRight,
+                    colors: [Constants.primaryColor, Constants.secondaryColor]),
+              ),
             )),
-      ),
+        Center(
+            child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            Text(
+              "TIME'S UP!\nHere is what you drew:",
+              style: TextStyle(fontSize: 28, color: Constants.textColor),
+              textAlign: TextAlign.center,
+            ),
+            Container(
+              child: _sketch.image,
+              decoration: BoxDecoration(color: Colors.white),
+            ),
+            Text(
+              "Waiting for next round...",
+              style: TextStyle(color: Constants.textColor, fontSize: 15),
+            )
+          ],
+        )),
+      ])),
     );
   }
 }
