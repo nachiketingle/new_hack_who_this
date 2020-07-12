@@ -22,6 +22,7 @@ class _ResultsSketchesState extends State<ResultsSketches> {
         await ResultsServices.resultsDetails(User.currUser.accessCode, word);
     // get the list of details
     List<dynamic> sketchDetails = result["details"];
+    print(result["guess"]);
     wordGuessed = result["guess"];
     for (Map<String, dynamic> sketchDetail in sketchDetails) {
       // map the drawer to the sketch image
@@ -29,7 +30,7 @@ class _ResultsSketchesState extends State<ResultsSketches> {
       String sketch = sketchDetail["sketch"];
       details[drawer] = Sketch(sketch).image;
     }
-    print(details);
+    print(details.keys);
     return details;
   }
 
@@ -64,20 +65,16 @@ class _ResultsSketchesState extends State<ResultsSketches> {
                   Map<String, Image> map = snapshot.data;
                   List<String> names = map.keys.toList();
                   return Column(children: [
-                    Column(children: [
-                      SizedBox(
-                          height: MediaQuery.of(context).size.height * .10),
-                      Center(
-                          child: Text(
-                        "Your drawings of " + word,
-                        style:
-                            TextStyle(fontSize: 25, color: Constants.textColor),
-                        textAlign: TextAlign.center,
-                      )),
-                      SizedBox(
-                          height: MediaQuery.of(context).size.height * .05),
-                    ]),
-                    Expanded(
+                    SizedBox(height: MediaQuery.of(context).size.height * .10),
+                    Center(
+                        child: Text(
+                      "Sketches of " + word,
+                      style:
+                          TextStyle(fontSize: 25, color: Constants.textColor),
+                      textAlign: TextAlign.center,
+                    )),
+                    SizedBox(height: MediaQuery.of(context).size.height * .05),
+                    Container(
                       child: ListView.builder(
                           shrinkWrap: true,
                           physics: AlwaysScrollableScrollPhysics(),
@@ -106,10 +103,11 @@ class _ResultsSketchesState extends State<ResultsSketches> {
                                         child: Container(
                                       decoration:
                                           BoxDecoration(color: Colors.white),
-                                      width:
-                                          MediaQuery.of(context).size.width * 0.5,
-                                      height: MediaQuery.of(context).size.height *
+                                      width: MediaQuery.of(context).size.width *
                                           0.5,
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.5,
                                       child: map[names[index]],
                                     ))
                                   ],
@@ -118,8 +116,11 @@ class _ResultsSketchesState extends State<ResultsSketches> {
                             );
                           }),
                     ),
-                        Center(
-                                child: Text("Your drawings of " + wordGuessed)
+                    SizedBox(height: MediaQuery.of(context).size.height * .10),
+                    Center(
+                        child: Text(wordGuessed + " was guessed!",
+                            style: TextStyle(
+                                fontSize: 25, color: Constants.textColor)))
                   ]);
                 } else {
                   return Center(

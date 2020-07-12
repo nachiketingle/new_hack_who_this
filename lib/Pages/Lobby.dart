@@ -112,7 +112,8 @@ class _LobbyState extends State<Lobby> {
         }
         print("Starting Game with words " + myWords.toString());
         //Navigator.of(context).pushNamed('/chooseWord', arguments: myWords);
-        Navigator.pushReplacement(context, CustomFadeTransition.createRoute(ChooseWord(), args: myWords));
+        Navigator.pushReplacement(context,
+            CustomFadeTransition.createRoute(ChooseWord(), args: myWords));
       }
     });
   }
@@ -145,63 +146,66 @@ class _LobbyState extends State<Lobby> {
                   gradient: LinearGradient(
                       begin: Alignment.bottomCenter,
                       end: Alignment.topRight,
-                      colors: [Constants.primaryColor, Constants.secondaryColor]),
+                      colors: [
+                        Constants.primaryColor,
+                        Constants.secondaryColor
+                      ]),
                 ),
               )),
           Center(
               child: Column(
+            children: <Widget>[
+              SizedBox(
+                height: 20,
+              ),
+              Text(_user.groupName,
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 50,
+                      color: Constants.primaryColor),
+                  textAlign: TextAlign.center),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  SizedBox(height: 20,),
                   Text(
-                    _user.groupName,
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 50,
-                        color: Constants.primaryColor),
+                    "Access Code: ",
+                    style: TextStyle(fontSize: 20),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        "Access Code: ",
-                        style: TextStyle(fontSize: 20),
-                      ),
-                      SelectableText(
-                        _user.accessCode.toString(),
-                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                      )
-                    ],
-                  ),
-                  Divider(
-                    color: Colors.black,
-                  ),
-                  Expanded(
-                    child: AnimatedList(
-                      key: _animatedListKey,
-                      shrinkWrap: true,
-                      initialItemCount: _userList.length,
-                      itemBuilder: (context, index, animation) {
-                        return _userBuilder(
-                            _userList[index], index, context, animation);
-                      },
-                    ),
-                  ),
-                  Divider(
-                    color: Colors.black,
-                  ),
-                  Align(
-                    alignment: Alignment.bottomLeft,
-                    child: Padding(
-                        padding:
-                        EdgeInsets.all(MediaQuery.of(context).size.height * .03),
-                        child: Text(
-                          "Group Size: " + _userList.length.toString(),
-                          style: TextStyle(fontSize: 20),
-                        )),
-                  ),
+                  SelectableText(
+                    _user.accessCode.toString(),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  )
                 ],
-              )
-          ),
+              ),
+              Divider(
+                color: Colors.black,
+              ),
+              Expanded(
+                child: AnimatedList(
+                  key: _animatedListKey,
+                  shrinkWrap: true,
+                  initialItemCount: _userList.length,
+                  itemBuilder: (context, index, animation) {
+                    return _userBuilder(
+                        _userList[index], index, context, animation);
+                  },
+                ),
+              ),
+              Divider(
+                color: Colors.black,
+              ),
+              Align(
+                alignment: Alignment.bottomLeft,
+                child: Padding(
+                    padding: EdgeInsets.all(
+                        MediaQuery.of(context).size.height * .03),
+                    child: Text(
+                      "Group Size: " + _userList.length.toString(),
+                      style: TextStyle(fontSize: 20),
+                    )),
+              ),
+            ],
+          )),
           Positioned(
             top: 5,
             left: 5,
@@ -216,9 +220,9 @@ class _LobbyState extends State<Lobby> {
         ]),
         floatingActionButton: _user.isHost
             ? FloatingActionButton.extended(
-          label: Text("Start"),
-          onPressed: _startSketching,
-        )
+                label: Text("Start"),
+                onPressed: _startSketching,
+              )
             : Container(),
       ),
     );
