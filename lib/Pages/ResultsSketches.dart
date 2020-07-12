@@ -66,11 +66,11 @@ class _ResultsSketchesState extends State<ResultsSketches> {
                                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                     children: <Widget>[
                                       Text(names[index - 1]),
-                                      Container(
+                                      Expanded(child:Container(
                                         width: MediaQuery.of(context).size.width * 0.75,
                                         height: MediaQuery.of(context).size.width * 0.75,
                                         child: map[names[index - 1]],
-                                      )
+                                      ))
                                     ],
                                   ),
                                 ),
