@@ -262,11 +262,13 @@ router.put('/submit-guess', async (req, res, next) => {
   let name = req.body['name'];
   let guess = req.body['guess'];
 
+  let doc = await mongo.findDocument(accessCode, 'group');
+
   // Update the document
-  await mongo.updateDocument(accessCode, `wordGuesses.${name}`, guess, 'group');
+  await mongo.updateDocument(accessCode, `wordGuesses.${doc["playerToWord"][name]}`, guess, 'group');
   await mongo.pushUpdate(accessCode, 'submittedMembers', name, 'group');
 
-  let doc = await mongo.findDocument(accessCode, 'group');
+  doc = await mongo.findDocument(accessCode, 'group');
 
   // If all guesses are submitted, send an onGameEnd notification
   let submittedCount = doc['submittedMembers'].length;
@@ -348,7 +350,7 @@ router.get('/results-details', async (req, res, next) => {
     offset++;
   });
 
-  res.status(200).json({ details: list, guess: doc['wordGuesses'][word] });
+  res.status(200).json({ details: list, guess: doc['wordGuesses'][word]});
 });
 
 
